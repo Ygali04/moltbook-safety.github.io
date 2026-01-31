@@ -27,7 +27,7 @@
                 <a href="../index.html#dimensions">Dimensions</a>
                 <a href="../index.html#architecture">Architecture</a>
                 <a href="docs.html" class="active">Docs</a>
-                <a href="https://github.com/Ygali04/moltbook-safety.github.io" class="nav-github" target="_blank">
+                <a href="https://github.com/viyercal/moltbook_safety" class="nav-github" target="_blank">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
                     </svg>
@@ -59,14 +59,7 @@
                     <h4>Components</h4>
                     <a href="#scraper" class="sidebar-link">Scraper</a>
                     <a href="#judge" class="sidebar-link">LLM Judge</a>
-                    <a href="#agent-scorer" class="sidebar-link">Agent Scorer</a>
-                    <a href="#reports" class="sidebar-link">Reports</a>
-                </div>
-                <div class="sidebar-section">
-                    <h4>Deployment</h4>
-                    <a href="#docker" class="sidebar-link">Docker</a>
-                    <a href="#airflow" class="sidebar-link">Airflow</a>
-                    <a href="#database" class="sidebar-link">Database</a>
+                    <a href="#output" class="sidebar-link">Output Format</a>
                 </div>
             </div>
         </aside>
@@ -112,8 +105,8 @@
                             <span class="code-lang">bash</span>
                             <button class="code-copy" onclick="copyCode(this)">Copy</button>
                         </div>
-                        <pre><code>git clone https://github.com/Ygali04/moltbook-safety.github.io.git
-cd moltbook-safety.github.io
+                        <pre><code>git clone https://github.com/viyercal/moltbook_safety.git
+cd moltbook_safety
 
 # Create virtual environment
 python -m venv venv
@@ -179,19 +172,9 @@ python molt-observatory/run_pipeline.py --limit 30
                                 <td>Sort order: new, top, hot</td>
                             </tr>
                             <tr>
-                                <td><code>--incremental</code></td>
-                                <td>false</td>
-                                <td>Only fetch new content since last run</td>
-                            </tr>
-                            <tr>
-                                <td><code>--no-comment-eval</code></td>
-                                <td>false</td>
-                                <td>Skip individual comment evaluation</td>
-                            </tr>
-                            <tr>
-                                <td><code>--generate-reports</code></td>
-                                <td>false</td>
-                                <td>Only generate reports from existing runs</td>
+                                <td><code>--out</code></td>
+                                <td>runs</td>
+                                <td>Output directory for run artifacts</td>
                             </tr>
                         </tbody>
                     </table>
@@ -400,9 +383,8 @@ python molt-observatory/run_pipeline.py --limit 30
                     
                     <ul>
                         <li><strong>Rate Limiting</strong> - Token bucket (0.5 req/sec, burst 3)</li>
-                        <li><strong>Pagination</strong> - Automatic with stop conditions</li>
                         <li><strong>Retry Logic</strong> - Exponential backoff for 429/5xx</li>
-                        <li><strong>Incremental</strong> - Stop at previously seen timestamps</li>
+                        <li><strong>Bot Header</strong> - Transparent identification for safety research</li>
                     </ul>
 
                     <div class="code-block">
@@ -414,8 +396,8 @@ python molt-observatory/run_pipeline.py --limit 30
 
 api = MoltbookAPI()
 
-# Fetch all posts with pagination
-posts = api.get_all_posts(sort="new", limit=50, max_pages=10)
+# Fetch posts listing
+posts = api.get_posts_list(sort="new", limit=30)
 
 # Fetch post with comments
 detail = api.get_post_detail(post_id)</code></pre>
@@ -435,109 +417,38 @@ detail = api.get_post_detail(post_id)</code></pre>
                     </ul>
                 </section>
 
-                <section id="agent-scorer">
-                    <h2>Agent Scorer</h2>
+                <section id="output">
+                    <h2>Output Format</h2>
                     
-                    <p>Aggregates scores per agent with historical tracking:</p>
-                    
-                    <ul>
-                        <li>Mean, max, and high-count per dimension</li>
-                        <li>Risk flags for scores ≥7</li>
-                        <li>Append-only JSONL history files</li>
-                        <li>Trend queries over time</li>
-                    </ul>
-                </section>
-
-                <section id="reports">
-                    <h2>Reports</h2>
-                    
-                    <p>Self-contained HTML reports with Plotly charts:</p>
-                    
-                    <ul>
-                        <li><strong>Dashboard</strong> - Site stats and dimension summaries</li>
-                        <li><strong>Growth</strong> - Time-series of entity counts</li>
-                        <li><strong>Leaderboards</strong> - Top agents/posts per dimension</li>
-                    </ul>
-
-                    <div class="code-block">
-                        <div class="code-header">
-                            <span class="code-lang">bash</span>
-                            <button class="code-copy" onclick="copyCode(this)">Copy</button>
-                        </div>
-                        <pre><code># Generate reports from existing runs
-python molt-observatory/run_pipeline.py --generate-reports
-
-# Output:
-# reports/output/dashboard.html
-# reports/output/growth.html
-# reports/output/leaderboard.html</code></pre>
-                    </div>
-                </section>
-
-                <!-- Deployment -->
-                <section id="docker">
-                    <h2>Docker Deployment</h2>
+                    <p>Each pipeline run creates timestamped output directories with three layers:</p>
                     
                     <div class="code-block">
                         <div class="code-header">
-                            <span class="code-lang">bash</span>
+                            <span class="code-lang">text</span>
                             <button class="code-copy" onclick="copyCode(this)">Copy</button>
                         </div>
-                        <pre><code>cd molt-observatory/ops
-
-# Start Airflow stack
-docker-compose up -d
-
-# Access Airflow UI
-open http://localhost:8080
-# Username: admin, Password: admin</code></pre>
+                        <pre><code>runs/20260130T175721Z/
+├── raw/                  # Bronze: Raw API responses
+│   ├── posts_list.json
+│   └── post_{id}.json
+├── silver/               # Silver: Structured transcripts
+│   └── transcripts.jsonl
+├── gold/                 # Gold: Evaluation results
+│   ├── evals.jsonl       # Per-post scores
+│   └── aggregates.json   # Summary statistics
+└── meta/
+    └── snapshot.json     # Run metadata</code></pre>
                     </div>
-                </section>
 
-                <section id="airflow">
-                    <h2>Airflow Orchestration</h2>
-                    
-                    <p>Two DAGs for automated monitoring:</p>
-                    
-                    <table class="docs-table">
-                        <thead>
-                            <tr>
-                                <th>DAG</th>
-                                <th>Schedule</th>
-                                <th>Description</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><code>moltbook_hourly_ingest_eval</code></td>
-                                <td>Every hour</td>
-                                <td>Incremental scrape and evaluation</td>
-                            </tr>
-                            <tr>
-                                <td><code>moltbook_weekly_full_refresh</code></td>
-                                <td>Sundays midnight</td>
-                                <td>Full re-scrape with cursor reset</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </section>
-
-                <section id="database">
-                    <h2>Database Schema</h2>
-                    
-                    <p>
-                        PostgreSQL with SCD Type 2 temporal design for point-in-time queries. 
-                        See <a href="https://github.com/Ygali04/moltbook-safety.github.io/blob/main/docs/database-schema.md" target="_blank">full schema documentation</a>.
-                    </p>
-                    
-                    <p>Key tables:</p>
+                    <h3>Evaluation Output Schema</h3>
+                    <p>Each evaluation in <code>evals.jsonl</code> contains:</p>
                     <ul>
-                        <li><code>snapshots</code> - Each pipeline run</li>
-                        <li><code>agents</code> - Agent profiles (SCD Type 2)</li>
-                        <li><code>posts</code> - Post content and metrics</li>
-                        <li><code>comments</code> - Threaded comments</li>
-                        <li><code>post_evaluations</code> - LLM scores</li>
-                        <li><code>agent_score_history</code> - Aggregated scores over time</li>
+                        <li><strong>post_id</strong> - Original post identifier</li>
+                        <li><strong>transcript_id</strong> - Hash of transcript content</li>
+                        <li><strong>model</strong> - LLM used for evaluation</li>
+                        <li><strong>scores</strong> - Per-dimension scores (0-10)</li>
+                        <li><strong>evidence</strong> - Exact quotes from source</li>
+                        <li><strong>explanation</strong> - Reasoning for each score</li>
                     </ul>
                 </section>
 
@@ -545,7 +456,7 @@ open http://localhost:8080
                 <div class="docs-footer">
                     <p>
                         <strong>Need help?</strong> Open an issue on 
-                        <a href="https://github.com/Ygali04/moltbook-safety.github.io/issues" target="_blank">GitHub</a>.
+                        <a href="https://github.com/viyercal/moltbook_safety/issues" target="_blank">GitHub</a>.
                     </p>
                 </div>
             </article>
