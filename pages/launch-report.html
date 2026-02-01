@@ -71,7 +71,7 @@
                 <p class="report-subtitle">
                     A comprehensive analysis of AI agent interactions on Moltbook during its launch window.
                     We scraped thousands of conversations, built a tiered evaluation pipeline, and uncovered
-                    surprising patterns in agent behavior&mdash;including a coordinated spam attack and
+                    surprising patterns in agent behavior, including a coordinated spam attack and
                     threads exhibiting genuine safety concerns.
                 </p>
                 <div class="report-stats">
@@ -113,7 +113,7 @@
                     Silver (processed transcripts), and Gold (evaluation results). This approach, borrowed from data
                     engineering
                     best practices, enables reproducible analysis and efficient incremental processing. Each layer is
-                    immutable&mdash;we
+                    immutable; we
                     never modify data in place, only append new transformations.
                 </p>
 
@@ -175,7 +175,7 @@
                     <p>
                         We captured data from Moltbook's first weeks of operation: 2,737 posts containing
                         24,552 comments across hundreds of AI agents. This represents a unique dataset
-                        of AI-to-AI and AI-to-human interactions in an uncontrolled environment&mdash;something
+                        of AI-to-AI and AI-to-human interactions in an uncontrolled environment, something
                         that simply doesn't exist in traditional alignment research.
                     </p>
                 </div>
@@ -189,7 +189,7 @@
                 <h3>The Research Question</h3>
                 <p>
                     Our first analytical question was simple: <em>How do AI agents actually interact on an open
-                        platform?</em>
+                        platform? </em>
                     Traditional safety evaluations focus on single-turn prompts or carefully curated multi-turn
                     dialogues.
                     But what happens when agents are free to converse without supervision?
@@ -204,7 +204,7 @@
                 </p>
                 <p>
                     Our first finding was surprising: despite high comment counts, most threads lack
-                    genuine conversational depth. The platform is <strong>"wide but shallow"</strong>&mdash;agents
+                    genuine conversational depth. The platform is <strong>"wide but shallow:"</strong> agents
                     broadcast responses but rarely engage in multi-turn dialogue.
                 </p>
 
@@ -259,7 +259,7 @@
                 <p>
                     The cumulative distribution function (CDF) below shows the percentage of threads at or below each
                     depth level.
-                    The key observation is the near-vertical jump at depth 2&mdash;fully <strong>91% of all
+                    The key observation is the near-vertical jump at depth 2: fully <strong>91% of all
                         threads</strong> have
                     a maximum depth of 2 or less. This is a remarkably tight distribution for what's supposed to be a
                     "social" platform.
@@ -269,7 +269,7 @@
                     marks
                     the point where threads become statistically unusual. Anything beyond this threshold represents
                     genuine
-                    conversational engagement&mdash;which is exactly what we want to analyze for safety.
+                    conversational engagement, which is exactly what we want to analyze for safety.
                 </p>
                 <div class="chart-container">
                     <div class="chart-header">
@@ -293,7 +293,7 @@
                         other (not just to posts), it could signal either genuine engagement or coordinated behavior.
                     </li>
                     <li><strong>Spam targets shallow threads:</strong> Bot attacks focus on high-visibility posts where
-                        depth doesn't matter&mdash;they just need to dump content.</li>
+                        depth doesn't matter: they just need to dump content.</li>
                 </ul>
 
                 <h3>Depth Histogram: The Concentration is Stark</h3>
@@ -302,7 +302,7 @@
                     (2,401 out of 2,737)
                     have exactly depth 2. Depth 1 threads (91 total) are posts with no comments at all or only
                     empty/deleted comments.
-                    Only 2 threads in our entire dataset achieved depth 4&mdash;the deepest conversations we observed.
+                    Only 2 threads in our entire dataset achieved depth 4: the deepest conversations we observed.
                 </p>
                 <div class="chart-container">
                     <div class="chart-header">
@@ -317,7 +317,7 @@
                     We initially hypothesized that high-engagement threads (lots of comments) would also be deep threads
                     (lots of replies to replies). This turned out to be completely wrong. The engagement distribution
                     follows a classic long-tail: most posts get 3-8 comments, but a few accumulate hundreds. However,
-                    those high-comment posts are almost entirely shallow&mdash;dominated by spam and drive-by
+                    those high-comment posts are almost entirely shallow: dominated by spam and drive-by
                     interactions.
                 </p>
                 <p>
@@ -327,23 +327,13 @@
                     almost exclusively being spam-inflated.
                 </p>
 
-                <div class="chart-grid">
-                    <div class="chart-container">
-                        <div class="chart-header">
-                            <span class="chart-title">Engagement Box Plot</span>
-                            <span class="chart-source">engagement_boxplot.html</span>
-                        </div>
-                        <iframe class="chart-frame-short"
-                            src="../reports/thread_analysis/engagement_boxplot.html"></iframe>
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <span class="chart-title">Engagement Histogram</span>
+                        <span class="chart-source">engagement_histogram.html</span>
                     </div>
-                    <div class="chart-container">
-                        <div class="chart-header">
-                            <span class="chart-title">Engagement Histogram</span>
-                            <span class="chart-source">engagement_histogram.html</span>
-                        </div>
-                        <iframe class="chart-frame-short"
-                            src="../reports/thread_analysis/engagement_histogram.html"></iframe>
-                    </div>
+                    <iframe class="chart-frame"
+                        src="../reports/thread_analysis/engagement_histogram.html"></iframe>
                 </div>
 
                 <h3>The Depth vs. Engagement Scatter: Validating Our Partitioning Strategy</h3>
@@ -374,7 +364,7 @@
                         Most AI agent interactions are <strong>parallel monologues</strong>, not conversations.
                         A post with 100+ comments typically has depth of only 2, meaning almost no back-and-forth
                         dialogue occurs. Agents respond to posts, but rarely to each other. When they do engage
-                        in actual conversation (depth ≥3), it warrants special attention&mdash;these are the
+                        in actual conversation (depth ≥3), it warrants special attention: these are the
                         threads where interesting (and potentially concerning) behaviors emerge.
                     </p>
                 </div>
@@ -397,7 +387,7 @@
                             <td>Fixed depth ≥4</td>
                             <td class="mono">4.0</td>
                             <td class="mono">2</td>
-                            <td>Too restrictive&mdash;misses interesting depth-3 threads</td>
+                            <td>Too restrictive: misses interesting depth-3 threads</td>
                         </tr>
                         <tr>
                             <td>Fixed depth ≥3</td>
@@ -409,7 +399,7 @@
                             <td style="font-weight: bold;">2σ threshold</td>
                             <td class="mono" style="font-weight: bold;">2.75</td>
                             <td class="mono" style="font-weight: bold;">245</td>
-                            <td style="font-weight: bold;">Statistically principled, same result</td>
+                            <td style="font-weight: bold;">Statistically principled: same result</td>
                         </tr>
                         <tr>
                             <td>1σ threshold</td>
@@ -429,7 +419,7 @@
                     Interestingly, most threshold methods converge on the same set of 245 threads because depth
                     is discrete (integers only). The 2σ approach (mean + 2 standard deviations = 2.75) is
                     statistically principled and happens to align with depth ≥3. We chose this method for
-                    reproducibility and future-proofing&mdash;if Moltbook's interaction patterns change, the
+                    reproducibility and future-proofing: if Moltbook's interaction patterns change, the
                     threshold will adapt.
                 </p>
             </section>
@@ -453,7 +443,7 @@
                 </ul>
                 <p>
                     This is unsustainable for continuous monitoring. If we wanted to scrape Moltbook daily and evaluate
-                    new content, we'd be looking at thousands of dollars per month&mdash;far beyond what a volunteer
+                    new content, we'd be looking at thousands of dollars per month: far beyond what a volunteer
                     open-source project can afford.
                 </p>
                 <p>
@@ -584,7 +574,7 @@
                         Most open-source safety datasets focus on obvious harms: profanity, PII leakage, explicit
                         content. These are important but well-covered by existing tools. We chose harm enablement,
                         deception, power-seeking, and sycophancy because they represent <strong>subtle alignment
-                            failures</strong> that rarely appear in public benchmarks&mdash;yet they may be the most
+                            failures</strong> that rarely appear in public benchmarks:yet they may be the most
                         important to understand as AI systems become more capable and autonomous.
                     </p>
                     <p style="margin-top: var(--space-md);">
@@ -607,7 +597,7 @@
                 </p>
                 <ul style="color: var(--text-secondary); margin-bottom: var(--space-lg); line-height: 2;">
                     <li><strong>Hot Threads (50 posts):</strong> The top 50 posts by raw comment count. These represent
-                        "viral" content that attracted the most engagement&mdash;and, we suspected, the most spam.</li>
+                        "viral" content that attracted the most engagement: and, we suspected, the most spam.</li>
                     <li><strong>Deep Threads (245 posts):</strong> Posts with depth ≥3, representing threads where
                         genuine conversation occurred (agents replied to agents, not just to the original post).</li>
                 </ul>
@@ -652,23 +642,13 @@
                     median score of 4.22, with Q1-Q3 range of approximately 3-5.
                 </p>
 
-                <div class="chart-grid">
-                    <div class="chart-container">
-                        <div class="chart-header">
-                            <span class="chart-title">Lite Judge Score Distribution (Hot Threads)</span>
-                            <span class="chart-source">lite_score_histogram.html</span>
-                        </div>
-                        <iframe class="chart-frame-short"
-                            src="../reports/tiered_eval_hot/lite_score_histogram.html"></iframe>
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <span class="chart-title">Lite Judge Score Distribution (Hot Threads)</span>
+                        <span class="chart-source">lite_score_histogram.html</span>
                     </div>
-                    <div class="chart-container">
-                        <div class="chart-header">
-                            <span class="chart-title">Score Box Plot (Hot Threads)</span>
-                            <span class="chart-source">lite_score_boxplot.html</span>
-                        </div>
-                        <iframe class="chart-frame-short"
-                            src="../reports/tiered_eval_hot/lite_score_boxplot.html"></iframe>
-                    </div>
+                    <iframe class="chart-frame"
+                        src="../reports/tiered_eval_hot/lite_score_histogram.html"></iframe>
                 </div>
 
                 <h3>Hot Threads: Escalation and Spam Analysis</h3>
@@ -676,7 +656,7 @@
                     Of the 49 transcripts evaluated (after grouping messages by thread), 22 (44.9%) were escalated to
                     Tier 2 for full evaluation. This is a reasonably high escalation rate, suggesting that even
                     after heavy spam filtering, hot threads contain substantial concerning content. The spam breakdown
-                    pie chart shows the distribution of filter reasons&mdash;agent-based spam (the blocklist) dominates.
+                    pie chart shows the distribution of filter reasons: agent-based spam (the blocklist) dominates.
                 </p>
 
                 <div class="chart-grid">
@@ -702,7 +682,7 @@
                     hot threads),
                     and the unique message ratio jumps to 57% (vs. 10%). These are actual conversations, not spam dumps.
                     The
-                    filter funnel shows 2,939 messages (65%) surviving to Tier 1&mdash;a stark contrast to the 11%
+                    filter funnel shows 2,939 messages (65%) surviving to Tier 1: a stark contrast to the 11%
                     survival rate
                     in hot threads.
                 </p>
@@ -725,23 +705,13 @@
                     underlying signal is consistent regardless of thread type.
                 </p>
 
-                <div class="chart-grid">
-                    <div class="chart-container">
-                        <div class="chart-header">
-                            <span class="chart-title">Lite Judge Score Distribution (Deep Threads)</span>
-                            <span class="chart-source">lite_score_histogram.html</span>
-                        </div>
-                        <iframe class="chart-frame-short"
-                            src="../reports/tiered_eval_deep/lite_score_histogram.html"></iframe>
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <span class="chart-title">Lite Judge Score Distribution (Deep Threads)</span>
+                        <span class="chart-source">lite_score_histogram.html</span>
                     </div>
-                    <div class="chart-container">
-                        <div class="chart-header">
-                            <span class="chart-title">Score Box Plot (Deep Threads)</span>
-                            <span class="chart-source">lite_score_boxplot.html</span>
-                        </div>
-                        <iframe class="chart-frame-short"
-                            src="../reports/tiered_eval_deep/lite_score_boxplot.html"></iframe>
-                    </div>
+                    <iframe class="chart-frame"
+                        src="../reports/tiered_eval_deep/lite_score_histogram.html"></iframe>
                 </div>
 
                 <h3>Partition Comparison: The Numbers Tell the Story</h3>
@@ -771,7 +741,7 @@
                             <td>Spam Rate</td>
                             <td class="mono" style="color: var(--harm-color);">80.7%</td>
                             <td class="mono" style="color: var(--accent-secondary);">26.0%</td>
-                            <td><strong>3x difference</strong>&mdash;spam targets visibility</td>
+                            <td><strong>3x difference</strong>: spam targets visibility</td>
                         </tr>
                         <tr>
                             <td>Unique Message Texts</td>
@@ -943,7 +913,7 @@
                 <p>
                     Interestingly, harm enablement scored near-zero across almost all content. The Moltbook ecosystem
                     doesn't appear to host explicit harmful content (weapons instructions, exploitation guides, etc.).
-                    This makes sense&mdash;the platform is focused on AI agent socialization, not information-seeking.
+                    This makes sense: the platform is focused on AI agent socialization, not information-seeking.
                     The few non-zero scores came from threads discussing "infiltration" and "subversion" in abstract
                     terms.
                 </p>
@@ -1082,10 +1052,9 @@
                             BRC-20 is an experimental token standard on Bitcoin that uses inscriptions to record token
                             operations.
                             This attack appears designed to exploit any indexers or scrapers that process Moltbook
-                            content&mdash;by
+                            content: by
                             posting "mint" commands as comments, the attacker could potentially create fake minting
-                            records that
-                            get picked up by poorly-designed indexers.
+                            records that get picked up by poorly-designed indexers.
                         </p>
                         <p>
                             Our prefix-based detection (<code class="code-inline">{"p":"</code>) catches this and all
@@ -1196,7 +1165,7 @@
                     <div class="insight-title">2. Spam Dominates High-Engagement Content</div>
                     <p>
                         80.7% of messages in "hot" threads were spam, primarily from the agent_smith clone
-                        swarm. High comment counts are not indicators of quality&mdash;they're indicators
+                        swarm. High comment counts are not indicators of quality: they're indicators
                         of spam targeting. Any recommendation algorithm based on engagement would surface
                         the most polluted content.
                     </p>
@@ -1278,13 +1247,13 @@
                 <p>
                     This report analyzes a curated subset of our scraped data: the 50 highest-engagement threads (hot)
                     and 245 deepest threads (depth ≥3). Together, these 295 threads represent the most analytically
-                    interesting content&mdash;the viral posts and the genuine conversations.
+                    interesting content: the viral posts and the genuine conversations.
                 </p>
                 <p>
                     However, we have <strong>significantly more data</strong> awaiting evaluation. The full 2,737-post
                     dataset with 24,552 comments contains thousands of threads we haven't yet analyzed with full Tier 2
                     evaluation. Even with our tiered approach saving 95%+, full evaluation would cost $10-15 per batch.
-                    Continuous daily monitoring would run $300-500/month&mdash;real money that limits what we can do
+                    Continuous daily monitoring would run $300-500/month: real money that limits what we can do
                     as a volunteer project.
                 </p>
 
@@ -1327,8 +1296,8 @@
                     <div class="insight-title">Code Release: Coming in 48 Hours</div>
                     <p>
                         We are preparing the Molt Observatory codebase for public release. The full
-                        pipeline&mdash;scraping,
-                        transcript building, tiered evaluation, report generation, and all visualization code&mdash;will
+                        pipeline: scraping,
+                        transcript building, tiered evaluation, report generation, and all visualization code: will
                         be available on GitHub under an open source license. We believe open tooling accelerates safety
                         research.
                     </p>
@@ -1342,7 +1311,7 @@
                 <h2 class="cta-title">Support Open Source AI Safety Research</h2>
                 <p class="cta-text">
                     Molt Observatory is a volunteer-driven project. Even with our tiered evaluation approach,
-                    analyzing thousands of conversations costs <strong>$10-15 per run</strong>&mdash;and naive
+                    analyzing thousands of conversations costs <strong>$10-15 per run</strong>: and naive
                     approaches would cost <strong>$250-400+</strong>. Continuous monitoring at scale requires
                     real funding. Your support helps us continue this work, expand to new threat vectors,
                     and maintain ongoing observation of the Moltbook ecosystem.
