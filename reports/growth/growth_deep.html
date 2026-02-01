@@ -250,6 +250,35 @@
             background: rgba(0, 229, 255, 0.1);
             color: #4ecdc4;
         }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            body { padding: 0.75rem; font-size: 13px; }
+            h1 { font-size: 1.3rem; }
+            .subtitle { font-size: 0.85rem; }
+            header { margin-bottom: 1rem; padding-bottom: 1rem; }
+            section { padding: 0.75rem; margin-bottom: 1rem; }
+            section h2 { font-size: 1rem; margin-bottom: 0.5rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+            .stat-card { padding: 0.75rem; }
+            .stat-value { font-size: 1.5rem; }
+            .stat-label { font-size: 0.75rem; }
+            table { font-size: 11px; }
+            th, td { padding: 0.4rem 0.3rem; }
+            .chart-container { padding: 0.5rem; margin: 0.5rem 0; }
+            .thread-selector select { min-width: 200px; font-size: 0.8rem; }
+            footer { padding: 1rem; font-size: 0.75rem; }
+        }
+        
+        @media (max-width: 480px) {
+            body { padding: 0.5rem; font-size: 11px; }
+            h1 { font-size: 1.1rem; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .stat-value { font-size: 1.2rem; }
+            table { font-size: 10px; }
+            th, td { padding: 0.3rem 0.2rem; }
+            .thread-selector select { min-width: 150px; }
+        }
     
     </style>
 </head>

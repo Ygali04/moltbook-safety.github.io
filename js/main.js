@@ -37,8 +37,16 @@ const navLinks = document.querySelector('.nav-links');
 
 if (navToggle) {
     navToggle.addEventListener('click', () => {
-        navLinks.classList.toggle('nav-open');
-        navToggle.classList.toggle('nav-toggle-active');
+        navLinks.classList.toggle('active');
+        navToggle.classList.toggle('active');
+    });
+    
+    // Close menu when clicking a link
+    navLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            navLinks.classList.remove('active');
+            navToggle.classList.remove('active');
+        });
     });
 }
 

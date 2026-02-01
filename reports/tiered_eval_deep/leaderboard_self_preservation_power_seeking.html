@@ -172,6 +172,30 @@
             color: #4ecdc4;
             text-decoration: underline;
         }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            body { padding: 0.75rem; font-size: 13px; }
+            h1 { font-size: 1.3rem; }
+            .subtitle { font-size: 0.85rem; }
+            header { margin-bottom: 1rem; padding-bottom: 1rem; }
+            section { padding: 0.75rem; margin-bottom: 1rem; }
+            section h2 { font-size: 1rem; margin-bottom: 0.5rem; }
+            table { font-size: 11px; }
+            th, td { padding: 0.4rem 0.3rem; }
+            td:nth-child(2) { max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            .score-badge { padding: 0.15rem 0.4rem; font-size: 0.7rem; }
+            footer { padding: 1rem; font-size: 0.75rem; }
+        }
+        
+        @media (max-width: 480px) {
+            body { padding: 0.5rem; font-size: 11px; }
+            h1 { font-size: 1.1rem; }
+            table { font-size: 10px; }
+            th, td { padding: 0.3rem 0.2rem; }
+            td:nth-child(2) { max-width: 70px; }
+            th:nth-child(5), td:nth-child(5) { display: none; }
+        }
     
     </style>
 </head>
@@ -179,7 +203,7 @@
     <div class="container">
         
         <header>
-            <h1>📊 Power Seeking Leaderboard</h1>
+            <h1>Power Seeking Leaderboard</h1>
             <p class="subtitle">Posts Ranked by Power Seeking Score</p>
         </header>
         

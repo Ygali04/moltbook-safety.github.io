@@ -27,6 +27,13 @@
                 <span class="logo-icon">🦞</span>
                 <span class="logo-text">Molt Observatory</span>
             </a>
+            <button class="nav-toggle" aria-label="Toggle menu">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
             <div class="nav-links">
                 <a href="../index.html#features">Features</a>
                 <a href="../index.html#dimensions">Dimensions</a>
@@ -276,14 +283,15 @@
                         <span class="chart-title">Thread Depth CDF (Cumulative Distribution)</span>
                         <span class="chart-source">thread_analysis/depth_cdf.html</span>
                     </div>
-                    <iframe class="chart-frame" src="../reports/thread_analysis/depth_cdf.html"></iframe>
+                    <iframe class="chart-frame" src="../reports/thread_analysis/depth_cdf.html" scrolling="no"></iframe>
                 </div>
 
                 <h3>Why Does This Matter for Safety?</h3>
                 <p>
                     The depth distribution has profound implications for AI safety research:
                 </p>
-                <ul style="color: var(--text-secondary); margin-bottom: var(--space-lg); line-height: 2;">
+                <ul
+                    style="color: var(--text-secondary); margin-bottom: var(--space-lg); line-height: 2; margin-left: 1.5rem; padding-left: 1rem;">
                     <li><strong>Most interactions are parallel monologues:</strong> Agents broadcast, they don't
                         converse. A post with 100 comments typically has everyone talking AT the author, not WITH each
                         other.</li>
@@ -309,7 +317,8 @@
                         <span class="chart-title">Thread Depth Distribution</span>
                         <span class="chart-source">thread_analysis/depth_histogram.html</span>
                     </div>
-                    <iframe class="chart-frame" src="../reports/thread_analysis/depth_histogram.html"></iframe>
+                    <iframe class="chart-frame chart-frame--bar" src="../reports/thread_analysis/depth_histogram.html"
+                        scrolling="no"></iframe>
                 </div>
 
                 <h3>Engagement Analysis: High Comments ≠ Deep Conversation</h3>
@@ -332,7 +341,8 @@
                         <span class="chart-title">Engagement Histogram</span>
                         <span class="chart-source">engagement_histogram.html</span>
                     </div>
-                    <iframe class="chart-frame" src="../reports/thread_analysis/engagement_histogram.html"></iframe>
+                    <iframe class="chart-frame chart-frame--bar"
+                        src="../reports/thread_analysis/engagement_histogram.html" scrolling="no"></iframe>
                 </div>
 
                 <h3>The Depth vs. Engagement Scatter: Validating Our Partitioning Strategy</h3>
@@ -354,7 +364,8 @@
                         <span class="chart-title">Thread Depth vs. Engagement Scatter</span>
                         <span class="chart-source">thread_analysis/thread_scatter.html</span>
                     </div>
-                    <iframe class="chart-frame-tall" src="../reports/thread_analysis/thread_scatter.html"></iframe>
+                    <iframe class="chart-frame-tall" src="../reports/thread_analysis/thread_scatter.html"
+                        scrolling="no"></iframe>
                 </div>
 
                 <div class="insight-box">
@@ -435,7 +446,8 @@
                     full multi-dimensional evaluation through Gemini 3 Flash. At that rate, evaluating our full dataset
                     would cost:
                 </p>
-                <ul style="color: var(--text-secondary); margin-bottom: var(--space-lg); line-height: 2;">
+                <ul
+                    style="color: var(--text-secondary); margin-bottom: var(--space-lg); line-height: 2; margin-left: 1.5rem; padding-left: 1rem;">
                     <li><strong>2,737 posts</strong> × ($1/20) = ~$137 just for posts</li>
                     <li><strong>24,552 comments</strong> would add hundreds more</li>
                     <li><strong>Total naive estimate: $250-400+</strong> for a single analysis run</li>
@@ -476,7 +488,8 @@
                 <p>
                     Before any LLM touches the data, we apply rule-based filters that require zero inference cost:
                 </p>
-                <ul style="color: var(--text-secondary); margin-bottom: var(--space-lg); line-height: 2;">
+                <ul
+                    style="color: var(--text-secondary); margin-bottom: var(--space-lg); line-height: 2; margin-left: 1.5rem; padding-left: 1rem;">
                     <li><strong>Exact match spam:</strong> Strings like "Disease" (7,336 occurrences), "Test", "Test
                         comment"</li>
                     <li><strong>Prefix pattern spam:</strong> Messages starting with <code
@@ -514,7 +527,8 @@
                     Escalated content receives comprehensive evaluation using Gemini 3 Flash with our full judge prompt.
                     This evaluates each transcript against all four threat vectors, providing:
                 </p>
-                <ul style="color: var(--text-secondary); margin-bottom: var(--space-lg); line-height: 2;">
+                <ul
+                    style="color: var(--text-secondary); margin-bottom: var(--space-lg); line-height: 2; margin-left: 1.5rem; padding-left: 1rem;">
                     <li><strong>Per-dimension scores:</strong> 0-10 rating for each threat vector</li>
                     <li><strong>Evidence extraction:</strong> Specific quotes that justify the score</li>
                     <li><strong>Confidence levels:</strong> How certain the judge is about each assessment</li>
@@ -594,7 +608,8 @@
                     Based on our thread depth analysis, we partitioned the dataset into two non-overlapping groups
                     for intensive evaluation:
                 </p>
-                <ul style="color: var(--text-secondary); margin-bottom: var(--space-lg); line-height: 2;">
+                <ul
+                    style="color: var(--text-secondary); margin-bottom: var(--space-lg); line-height: 2; margin-left: 1.5rem; padding-left: 1rem;">
                     <li><strong>Hot Threads (50 posts):</strong> The top 50 posts by raw comment count. These represent
                         "viral" content that attracted the most engagement: and, we suspected, the most spam.</li>
                     <li><strong>Deep Threads (245 posts):</strong> Posts with depth ≥3, representing threads where
@@ -628,7 +643,8 @@
                         <span class="chart-title">Filter Funnel: Hot Threads (50 highest-engagement posts)</span>
                         <span class="chart-source">tiered_eval_hot/filter_funnel.html</span>
                     </div>
-                    <iframe class="chart-frame-tall" src="../reports/tiered_eval_hot/filter_funnel.html"></iframe>
+                    <iframe class="chart-frame-tall" src="../reports/tiered_eval_hot/filter_funnel.html"
+                        scrolling="no"></iframe>
                 </div>
 
                 <h3>Hot Threads: Lite Judge Score Distribution</h3>
@@ -646,7 +662,8 @@
                         <span class="chart-title">Lite Judge Score Distribution (Hot Threads)</span>
                         <span class="chart-source">lite_score_histogram.html</span>
                     </div>
-                    <iframe class="chart-frame" src="../reports/tiered_eval_hot/lite_score_histogram.html"></iframe>
+                    <iframe class="chart-frame chart-frame--bar"
+                        src="../reports/tiered_eval_hot/lite_score_histogram.html" scrolling="no"></iframe>
                 </div>
 
                 <h3>Hot Threads: Escalation and Spam Analysis</h3>
@@ -663,14 +680,16 @@
                             <span class="chart-title">Escalation Breakdown (Hot Threads)</span>
                             <span class="chart-source">escalation_pie.html</span>
                         </div>
-                        <iframe class="chart-frame-short" src="../reports/tiered_eval_hot/escalation_pie.html"></iframe>
+                        <iframe class="chart-frame-short chart-frame--pie"
+                            src="../reports/tiered_eval_hot/escalation_pie.html" scrolling="no"></iframe>
                     </div>
                     <div class="chart-container">
                         <div class="chart-header">
                             <span class="chart-title">Spam Breakdown by Filter Type</span>
                             <span class="chart-source">spam_breakdown.html</span>
                         </div>
-                        <iframe class="chart-frame-short" src="../reports/tiered_eval_hot/spam_breakdown.html"></iframe>
+                        <iframe class="chart-frame-short chart-frame--pie"
+                            src="../reports/tiered_eval_hot/spam_breakdown.html" scrolling="no"></iframe>
                     </div>
                 </div>
 
@@ -690,7 +709,8 @@
                         <span class="chart-title">Filter Funnel: Deep Threads (245 conversational posts)</span>
                         <span class="chart-source">tiered_eval_deep/filter_funnel.html</span>
                     </div>
-                    <iframe class="chart-frame-tall" src="../reports/tiered_eval_deep/filter_funnel.html"></iframe>
+                    <iframe class="chart-frame-tall" src="../reports/tiered_eval_deep/filter_funnel.html"
+                        scrolling="no"></iframe>
                 </div>
 
                 <h3>Deep Threads: Score Distribution Comparison</h3>
@@ -708,7 +728,8 @@
                         <span class="chart-title">Lite Judge Score Distribution (Deep Threads)</span>
                         <span class="chart-source">lite_score_histogram.html</span>
                     </div>
-                    <iframe class="chart-frame" src="../reports/tiered_eval_deep/lite_score_histogram.html"></iframe>
+                    <iframe class="chart-frame chart-frame--bar"
+                        src="../reports/tiered_eval_deep/lite_score_histogram.html" scrolling="no"></iframe>
                 </div>
 
                 <h3>Partition Comparison: The Numbers Tell the Story</h3>
@@ -806,8 +827,8 @@
                         <span class="chart-title">Threat Vector Distribution Across All Evaluated Threads</span>
                         <span class="chart-source">tiered_eval_hot/charts/threat_vector_chart.html</span>
                     </div>
-                    <iframe class="chart-frame-tall"
-                        src="../reports/tiered_eval_hot/charts/threat_vector_chart.html"></iframe>
+                    <iframe class="chart-frame-tall" src="../reports/tiered_eval_hot/charts/threat_vector_chart.html"
+                        scrolling="no"></iframe>
                 </div>
 
                 <h3>Agent-Level Analysis: Who Are the Concerning Actors?</h3>
@@ -823,7 +844,8 @@
                         <span class="chart-title">Agent Safety Heatmap: Per-Agent Scores by Dimension</span>
                         <span class="chart-source">tiered_eval_hot/charts/agent_heatmap.html</span>
                     </div>
-                    <iframe class="chart-frame-xl" src="../reports/tiered_eval_hot/charts/agent_heatmap.html"></iframe>
+                    <iframe class="chart-frame-xl" src="../reports/tiered_eval_hot/charts/agent_heatmap.html"
+                        scrolling="no"></iframe>
                 </div>
 
                 <h3>Dimension Leaderboards: Top Scoring Threads</h3>
@@ -854,8 +876,9 @@
                         <span
                             class="chart-source">tiered_eval_deep/leaderboard_self_preservation_power_seeking.html</span>
                     </div>
-                    <iframe class="chart-frame-xl"
-                        src="../reports/tiered_eval_deep/leaderboard_self_preservation_power_seeking.html"></iframe>
+                    <iframe class="chart-frame-xl chart-frame--leaderboard"
+                        src="../reports/tiered_eval_deep/leaderboard_self_preservation_power_seeking.html"
+                        scrolling="auto"></iframe>
                 </div>
 
                 <h4>Deception & Evasion Leaderboard</h4>
@@ -877,8 +900,9 @@
                         <span class="chart-title">Deception & Evasion Leaderboard: Top Scoring Posts</span>
                         <span class="chart-source">tiered_eval_deep/leaderboard_deception_or_evasion.html</span>
                     </div>
-                    <iframe class="chart-frame-xl"
-                        src="../reports/tiered_eval_deep/leaderboard_deception_or_evasion.html"></iframe>
+                    <iframe class="chart-frame-xl chart-frame--leaderboard"
+                        src="../reports/tiered_eval_deep/leaderboard_deception_or_evasion.html"
+                        scrolling="auto"></iframe>
                 </div>
 
                 <h4>Delusional Sycophancy Leaderboard</h4>
@@ -902,8 +926,9 @@
                         <span class="chart-title">Delusional Sycophancy Leaderboard: Top Scoring Posts</span>
                         <span class="chart-source">tiered_eval_deep/leaderboard_delusional_sycophancy.html</span>
                     </div>
-                    <iframe class="chart-frame-xl"
-                        src="../reports/tiered_eval_deep/leaderboard_delusional_sycophancy.html"></iframe>
+                    <iframe class="chart-frame-xl chart-frame--leaderboard"
+                        src="../reports/tiered_eval_deep/leaderboard_delusional_sycophancy.html"
+                        scrolling="auto"></iframe>
                 </div>
 
                 <h4>Harm Enablement Leaderboard</h4>
@@ -920,8 +945,8 @@
                         <span class="chart-title">Harm Enablement Leaderboard: Top Scoring Posts</span>
                         <span class="chart-source">tiered_eval_deep/leaderboard_harm_enablement.html</span>
                     </div>
-                    <iframe class="chart-frame-xl"
-                        src="../reports/tiered_eval_deep/leaderboard_harm_enablement.html"></iframe>
+                    <iframe class="chart-frame-xl chart-frame--leaderboard"
+                        src="../reports/tiered_eval_deep/leaderboard_harm_enablement.html" scrolling="auto"></iframe>
                 </div>
             </section>
 
@@ -956,7 +981,8 @@
                             (40 numbered variants, with some gaps). Each clone exhibited identical, mechanistic
                             behavior:
                         </p>
-                        <ul style="color: var(--text-secondary); margin: var(--space-md) 0; line-height: 2;">
+                        <ul
+                            style="color: var(--text-secondary); margin: var(--space-md) 0; line-height: 2; margin-left: 1.5rem; padding-left: 1rem;">
                             <li>Posted exactly <strong>25 "Disease" comments</strong> (the same single word, repeated)
                             </li>
                             <li>Targeted exactly <strong>1 post</strong> per account</li>
@@ -1005,7 +1031,8 @@
                         <span class="chart-title">Clone Network Visualization: agent_smith Swarm</span>
                         <span class="chart-source">tiered_eval_hot/clone_network.html</span>
                     </div>
-                    <iframe class="chart-frame-tall" src="../reports/tiered_eval_hot/clone_network.html"></iframe>
+                    <iframe class="chart-frame-tall" src="../reports/tiered_eval_hot/clone_network.html"
+                        scrolling="no"></iframe>
                 </div>
 
                 <h3>Attack Cascade Timeline</h3>
@@ -1024,7 +1051,8 @@
                         <span class="chart-title">Attack Cascade Timeline: When Clones Activated</span>
                         <span class="chart-source">tiered_eval_hot/cascade_timeline.html</span>
                     </div>
-                    <iframe class="chart-frame-tall" src="../reports/tiered_eval_hot/cascade_timeline.html"></iframe>
+                    <iframe class="chart-frame-tall" src="../reports/tiered_eval_hot/cascade_timeline.html"
+                        scrolling="no"></iframe>
                 </div>
 
                 <div class="case-study">
@@ -1088,7 +1116,8 @@
                         <span class="chart-title">Spam Types by Detection Method</span>
                         <span class="chart-source">tiered_eval_hot/spam_types_bar.html</span>
                     </div>
-                    <iframe class="chart-frame-tall" src="../reports/tiered_eval_hot/spam_types_bar.html"></iframe>
+                    <iframe class="chart-frame-tall chart-frame--bar"
+                        src="../reports/tiered_eval_hot/spam_types_bar.html" scrolling="no"></iframe>
                 </div>
 
                 <div class="insight-box warning">
@@ -1096,7 +1125,7 @@
                     <p>
                         Based on these attack patterns, we recommend that AI agent platforms implement:
                     </p>
-                    <ul style="margin-top: var(--space-md); line-height: 2;">
+                    <ul style="margin-top: var(--space-md); line-height: 2; margin-left: 1.5rem; padding-left: 1rem;">
                         <li><strong>Clone detection:</strong> Flag accounts matching <code
                                 class="code-inline">name_N</code> patterns and apply collective rate limits</li>
                         <li><strong>Content prefix blocking:</strong> Block <code class="code-inline">{"p":"</code> in
@@ -1116,30 +1145,70 @@
                 <p>
                     Tracking entity creation over time reveals the platform's growth trajectory and helps contextualize
                     the attack windows we detected. The growth charts below show cumulative entity counts (posts,
-                    comments,
-                    unique agents, submolts) over the launch period.
+                    comments, unique agents, submolts) over the launch period.
                 </p>
                 <p>
                     <strong>Key observation:</strong> The spam attack windows are visible as sudden vertical jumps in
-                    comment
-                    counts that don't correspond to proportional increases in posts or agents. Legitimate growth shows
-                    correlated increases across all entity types; attack-driven growth shows asymmetric spikes.
+                    comment counts that don't correspond to proportional increases in posts or agents. Legitimate growth
+                    shows correlated increases across all entity types; attack-driven growth shows asymmetric spikes.
                 </p>
 
-                <div class="chart-container">
-                    <div class="chart-header">
-                        <span class="chart-title">Entity Growth Timeline: Hot Threads Partition</span>
-                        <span class="chart-source">growth/growth_hot.html</span>
+                <h3>Hot Threads Partition (Top 50 by Engagement)</h3>
+                <div class="report-stats" style="margin-bottom: var(--space-lg);">
+                    <div class="report-stat">
+                        <span class="report-stat-value">50</span>
+                        <span class="report-stat-label">Posts</span>
                     </div>
-                    <iframe class="chart-frame-xl" src="../reports/growth/growth_hot.html"></iframe>
+                    <div class="report-stat">
+                        <span class="report-stat-value">7,680</span>
+                        <span class="report-stat-label">Comments</span>
+                    </div>
+                    <div class="report-stat">
+                        <span class="report-stat-value">49</span>
+                        <span class="report-stat-label">Unique Agents</span>
+                    </div>
+                    <div class="report-stat">
+                        <span class="report-stat-value">150</span>
+                        <span class="report-stat-label">Submolts</span>
+                    </div>
                 </div>
 
                 <div class="chart-container">
                     <div class="chart-header">
-                        <span class="chart-title">Entity Growth Timeline: Deep Threads Partition</span>
-                        <span class="chart-source">growth/growth_deep.html</span>
+                        <span class="chart-title">Entity Growth Timeline: Hot Threads</span>
+                        <span class="chart-source">growth/hot_timeline.html</span>
                     </div>
-                    <iframe class="chart-frame-xl" src="../reports/growth/growth_deep.html"></iframe>
+                    <iframe class="chart-frame-xl chart-frame--growth" src="../reports/growth/hot_timeline.html"
+                        scrolling="no"></iframe>
+                </div>
+
+                <h3>Deep Threads Partition (Depth ≥ 3)</h3>
+                <div class="report-stats" style="margin-bottom: var(--space-lg);">
+                    <div class="report-stat">
+                        <span class="report-stat-value">258</span>
+                        <span class="report-stat-label">Posts</span>
+                    </div>
+                    <div class="report-stat">
+                        <span class="report-stat-value">3,316</span>
+                        <span class="report-stat-label">Comments</span>
+                    </div>
+                    <div class="report-stat">
+                        <span class="report-stat-value">204</span>
+                        <span class="report-stat-label">Unique Agents</span>
+                    </div>
+                    <div class="report-stat">
+                        <span class="report-stat-value">150</span>
+                        <span class="report-stat-label">Submolts</span>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <span class="chart-title">Entity Growth Timeline: Deep Threads</span>
+                        <span class="chart-source">growth/deep_timeline.html</span>
+                    </div>
+                    <iframe class="chart-frame-xl chart-frame--growth" src="../reports/growth/deep_timeline.html"
+                        scrolling="no"></iframe>
                 </div>
             </section>
 
@@ -1255,7 +1324,8 @@
                 </p>
 
                 <h3>Planned Expansions</h3>
-                <ul style="color: var(--text-secondary); margin-bottom: var(--space-lg); line-height: 2;">
+                <ul
+                    style="color: var(--text-secondary); margin-bottom: var(--space-lg); line-height: 2; margin-left: 1.5rem; padding-left: 1rem;">
                     <li><strong>Additional threat vectors:</strong> PII detection, profanity analysis, bigotry/bias
                         scoring, prompt injection attempts</li>
                     <li><strong>Agent reputation tracking:</strong> Longitudinal scores across time to identify

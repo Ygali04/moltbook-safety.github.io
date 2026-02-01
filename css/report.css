@@ -156,8 +156,65 @@
     margin-bottom: var(--space-lg);
 }
 
-.report-section p + p {
+.report-section p+p {
     margin-top: calc(-1 * var(--space-sm));
+}
+
+/* Bullet points with proper padding */
+.report-section ul,
+.report-section ol {
+    margin-left: var(--space-xl);
+    padding-left: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.report-section li {
+    margin-bottom: var(--space-sm);
+    padding-left: var(--space-sm);
+    color: var(--text-secondary);
+    line-height: 1.8;
+}
+
+.report-section li strong {
+    color: var(--text-primary);
+}
+
+/* Hyperlinks - bright and visible */
+.report-section a,
+.report-layout a {
+    color: var(--accent-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color var(--transition-fast);
+}
+
+.report-section a:hover,
+.report-layout a:hover {
+    color: #7ae5de;
+    text-decoration: underline;
+}
+
+/* Buttons should have white text, not link color */
+.report-layout a.btn,
+.report-section a.btn {
+    color: white;
+}
+
+.report-layout a.btn:hover,
+.report-section a.btn:hover {
+    color: white;
+    text-decoration: none;
+}
+
+/* Ensure text visibility on dark backgrounds */
+.report-section code,
+code.code-inline {
+    background: rgba(78, 205, 196, 0.15);
+    color: var(--accent-secondary);
+    padding: 0.15em 0.4em;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 0.85em;
 }
 
 /* Chart Containers */
@@ -169,13 +226,9 @@
     background: var(--bg-card);
 }
 
+/* Hide chart headers since graphs have their own titles */
 .chart-header {
-    padding: var(--space-md) var(--space-lg);
-    background: var(--bg-tertiary);
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    display: none;
 }
 
 .chart-title {
@@ -185,9 +238,7 @@
 }
 
 .chart-source {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    font-family: var(--font-mono);
+    display: none;
 }
 
 .chart-container iframe {
@@ -208,8 +259,19 @@
     height: 900px;
 }
 
+/* Growth timeline charts - 4 charts at 400px each + minimal padding */
+.chart-frame--growth {
+    height: 1750px;
+    min-height: 1750px;
+}
+
 .chart-frame-short {
-    height: 420px;
+    height: 500px;
+}
+
+/* Pie charts need more height */
+.chart-frame--pie {
+    height: 520px;
 }
 
 /* Chart Grid */
@@ -364,10 +426,21 @@
     height: 3px;
 }
 
-.threat-card.harm::before { background: var(--harm-color); }
-.threat-card.deception::before { background: var(--deception-color); }
-.threat-card.power::before { background: var(--power-color); }
-.threat-card.sycophancy::before { background: var(--sycophancy-color); }
+.threat-card.harm::before {
+    background: var(--harm-color);
+}
+
+.threat-card.deception::before {
+    background: var(--deception-color);
+}
+
+.threat-card.power::before {
+    background: var(--power-color);
+}
+
+.threat-card.sycophancy::before {
+    background: var(--sycophancy-color);
+}
 
 .threat-icon {
     font-size: 1.5rem;
@@ -484,7 +557,10 @@
     display: flex;
     gap: var(--space-md);
     justify-content: center;
+    align-items: center;
     flex-wrap: wrap;
+    margin: 0 auto;
+    width: 100%;
 }
 
 .cta-note {
@@ -493,31 +569,578 @@
     color: var(--text-muted);
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .report-stats {
-        flex-direction: column;
-        align-items: center;
+/* Responsive - Tablet */
+@media (max-width: 960px) {
+    .report-container {
+        padding: 0 var(--space-md);
     }
-    
-    .report-stat {
-        width: 100%;
-        max-width: 280px;
+
+    .report-section {
+        padding: var(--space-2xl) 0;
     }
-    
-    .chart-frame,
-    .chart-frame-tall,
-    .chart-frame-xl,
-    .chart-frame-short {
-        height: 400px;
+
+    .report-section h2 {
+        font-size: 1.6rem;
     }
-    
-    .pipeline-diagram {
-        flex-direction: column;
+
+    .report-section h3 {
+        font-size: 1.2rem;
     }
-    
-    .pipeline-arrow {
-        transform: rotate(90deg);
+
+    .stats-table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .stats-table th,
+    .stats-table td {
+        padding: var(--space-sm) var(--space-md);
+        font-size: 0.85rem;
+        white-space: nowrap;
     }
 }
 
+/* Responsive - Mobile */
+@media (max-width: 768px) {
+    .report-layout {
+        padding-top: 70px;
+    }
+
+    .report-hero {
+        padding: var(--space-2xl) 0 var(--space-xl);
+    }
+
+    .report-meta {
+        gap: var(--space-sm);
+    }
+
+    .report-title {
+        font-size: 1.8rem;
+        margin-bottom: var(--space-md);
+    }
+
+    .report-subtitle {
+        font-size: 1rem;
+        margin-bottom: var(--space-xl);
+        padding: 0 var(--space-sm);
+    }
+
+    .report-stats {
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-md);
+    }
+
+    .report-stat {
+        width: 100%;
+        max-width: 280px;
+        padding: var(--space-md);
+    }
+
+    .report-stat-value {
+        font-size: 1.6rem;
+    }
+
+    /* Chart Mobile Optimization */
+    .chart-container {
+        margin: var(--space-lg) calc(-1 * var(--space-md));
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+
+    /* chart-header is hidden globally */
+
+    /* Mobile bullet points */
+    .report-section ul,
+    .report-section ol {
+        margin-left: var(--space-md);
+        padding-left: var(--space-sm);
+    }
+
+    .report-section li {
+        padding-left: var(--space-xs);
+        font-size: 0.95rem;
+    }
+
+    .chart-frame {
+        height: 380px;
+        min-height: 380px;
+    }
+
+    .chart-frame-tall {
+        height: 500px;
+        min-height: 500px;
+    }
+
+    .chart-frame-xl {
+        height: 600px;
+        min-height: 600px;
+    }
+
+    .chart-frame-short {
+        height: 400px;
+        min-height: 400px;
+    }
+
+    .chart-frame--pie {
+        height: 480px;
+        min-height: 480px;
+    }
+
+    /* Ensure iframes fill container and don't scroll */
+    .chart-frame iframe,
+    .chart-frame-tall iframe,
+    .chart-frame-xl iframe,
+    .chart-frame-short iframe {
+        width: 100% !important;
+        height: 100% !important;
+        border: none;
+        overflow: hidden;
+    }
+
+    /* Chart Grid Mobile */
+    .chart-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-md);
+        margin: var(--space-lg) 0;
+    }
+
+    /* Pipeline Diagram Mobile */
+    .pipeline-diagram {
+        flex-direction: column;
+        padding: var(--space-lg);
+        gap: var(--space-sm);
+    }
+
+    .pipeline-step {
+        width: 100%;
+        flex-direction: row;
+        justify-content: flex-start;
+        gap: var(--space-md);
+        padding: var(--space-md);
+        min-width: unset;
+        text-align: left;
+    }
+
+    .pipeline-step-icon {
+        font-size: 1.3rem;
+    }
+
+    .pipeline-step-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .pipeline-arrow {
+        transform: rotate(90deg);
+        font-size: 1rem;
+    }
+
+    /* Threat Grid Mobile */
+    .threat-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-sm);
+    }
+
+    .threat-card {
+        padding: var(--space-md);
+    }
+
+    /* Case Study Mobile */
+    .case-study {
+        padding: var(--space-lg);
+        margin: var(--space-lg) calc(-1 * var(--space-md));
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+
+    .case-study-header {
+        flex-direction: column;
+        gap: var(--space-sm);
+    }
+
+    .case-study-icon {
+        font-size: 1.5rem;
+    }
+
+    .case-study-title {
+        font-size: 1.1rem;
+    }
+
+    .case-study-stats {
+        flex-direction: column;
+        gap: var(--space-md);
+    }
+
+    /* Insight Box Mobile */
+    .insight-box {
+        padding: var(--space-lg);
+        margin: var(--space-lg) calc(-1 * var(--space-md));
+        border-radius: 0;
+    }
+
+    /* CTA Section Mobile */
+    .report-cta {
+        padding: var(--space-2xl) var(--space-md);
+    }
+
+    .cta-title {
+        font-size: 1.5rem;
+    }
+
+    .cta-text {
+        font-size: 1rem;
+    }
+
+    .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .cta-buttons .btn {
+        width: 100%;
+        max-width: 280px;
+    }
+}
+
+/* Extra Small Devices */
+@media (max-width: 480px) {
+    .report-title {
+        font-size: 1.5rem;
+    }
+
+    .report-subtitle {
+        font-size: 0.95rem;
+    }
+
+    .report-badge {
+        font-size: 0.7rem;
+        padding: var(--space-xs) var(--space-sm);
+    }
+
+    .chart-frame {
+        height: 350px;
+        min-height: 350px;
+    }
+
+    .chart-frame-tall {
+        height: 450px;
+        min-height: 450px;
+    }
+
+    .chart-frame-xl {
+        height: 550px;
+        min-height: 550px;
+    }
+
+    .chart-frame-short {
+        height: 380px;
+        min-height: 380px;
+    }
+
+    .chart-frame--pie {
+        height: 450px;
+        min-height: 450px;
+    }
+
+    .report-section h2 {
+        font-size: 1.4rem;
+    }
+
+    .report-section h3 {
+        font-size: 1.1rem;
+    }
+
+    .threat-icon {
+        font-size: 1.2rem;
+    }
+
+    .threat-name {
+        font-size: 0.95rem;
+    }
+
+    .threat-desc {
+        font-size: 0.8rem;
+    }
+}
+
+/* Plotly Chart Mobile Optimizations */
+.chart-container iframe,
+.chart-container .plotly-graph-div {
+    touch-action: pan-x pan-y;
+}
+
+/* Ensure Plotly charts are responsive and NO scrolling */
+.chart-frame iframe,
+.chart-frame-tall iframe,
+.chart-frame-xl iframe,
+.chart-frame-short iframe {
+    width: 100% !important;
+    height: 100% !important;
+    border: none;
+    overflow: hidden;
+    scrolling: no;
+}
+
+/* Force charts to display fully */
+.chart-container {
+    overflow: visible;
+}
+
+.chart-frame,
+.chart-frame-tall,
+.chart-frame-xl,
+.chart-frame-short {
+    overflow: hidden;
+}
+
+/* Improve touch targets for Plotly */
+@media (pointer: coarse) {
+    .chart-container {
+        min-height: 350px;
+    }
+
+    /* Add padding for touch interaction */
+    .chart-frame {
+        padding: var(--space-xs);
+    }
+}
+
+/* Bar charts and histograms need extra height */
+.chart-frame--bar,
+.chart-frame--histogram {
+    height: 450px;
+    min-height: 450px;
+}
+
+@media (max-width: 768px) {
+
+    .chart-frame--bar,
+    .chart-frame--histogram {
+        height: 420px;
+        min-height: 420px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .chart-frame--bar,
+    .chart-frame--histogram {
+        height: 380px;
+        min-height: 380px;
+    }
+}
+
+/* Leaderboard Iframe with scrolling enabled */
+.chart-frame--leaderboard {
+    height: 600px;
+    min-height: 600px;
+    overflow: auto;
+}
+
+.chart-frame--leaderboard iframe {
+    width: 100% !important;
+    height: 100%;
+}
+
+@media (max-width: 768px) {
+    .chart-frame--leaderboard {
+        height: 500px;
+        min-height: 500px;
+    }
+
+    .chart-frame--leaderboard iframe {
+        width: 100% !important;
+        height: 100%;
+    }
+    
+    .chart-frame--growth {
+        height: 1700px;
+        min-height: 1700px;
+    }
+}
+
+@media (max-width: 480px) {
+    .chart-frame--leaderboard {
+        height: 450px;
+        min-height: 450px;
+    }
+
+    .chart-frame--leaderboard iframe {
+        width: 100% !important;
+        height: 100%;
+    }
+    
+    .chart-frame--growth {
+        height: 1650px;
+        min-height: 1650px;
+    }
+}
+
+/* Stats Table - No horizontal scroll on mobile */
+@media (max-width: 768px) {
+    .stats-table {
+        display: table;
+        width: 100%;
+        font-size: 0.75rem;
+    }
+
+    .stats-table th,
+    .stats-table td {
+        padding: var(--space-xs) var(--space-sm);
+        word-break: break-word;
+        white-space: normal;
+    }
+
+    /* Hide less important columns on mobile */
+    .stats-table th:nth-child(4),
+    .stats-table td:nth-child(4),
+    .stats-table th:nth-child(5),
+    .stats-table td:nth-child(5) {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-table {
+        font-size: 0.65rem;
+    }
+
+    .stats-table th,
+    .stats-table td {
+        padding: 4px 6px;
+    }
+}
+
+/* Report Stats Grid - Always centered */
+.report-stats {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    gap: var(--space-lg);
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .report-stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-sm);
+        width: 100%;
+        max-width: 350px;
+        margin: 0 auto;
+    }
+
+    .report-stat {
+        min-width: unset;
+        width: 100%;
+        max-width: none;
+        padding: var(--space-sm);
+    }
+
+    .report-stat-value {
+        font-size: 1.4rem;
+    }
+
+    .report-stat-label {
+        font-size: 0.7rem;
+    }
+}
+
+/* Pipeline Diagram - Centered and Compact */
+.pipeline-diagram {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    padding: var(--space-lg);
+    max-width: 100%;
+    margin: var(--space-lg) auto;
+}
+
+@media (max-width: 768px) {
+    .pipeline-diagram {
+        flex-direction: column;
+        padding: var(--space-md);
+        gap: var(--space-xs);
+    }
+
+    .pipeline-step {
+        width: 90%;
+        max-width: 280px;
+        flex-direction: row;
+        padding: var(--space-sm) var(--space-md);
+        gap: var(--space-sm);
+        min-width: unset;
+    }
+
+    .pipeline-step-icon {
+        font-size: 1.2rem;
+        min-width: 28px;
+    }
+
+    .pipeline-step-name {
+        font-size: 0.75rem;
+    }
+
+    .pipeline-step-desc {
+        font-size: 0.65rem;
+    }
+
+    .pipeline-arrow {
+        transform: rotate(90deg);
+        font-size: 0.9rem;
+        margin: var(--space-xs) 0;
+    }
+}
+
+/* Threat Grid - Centered */
+@media (max-width: 768px) {
+    .threat-grid {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-sm);
+    }
+
+    .threat-card {
+        width: 100%;
+        max-width: 320px;
+        padding: var(--space-md);
+    }
+
+    .threat-score {
+        font-size: 1.4rem;
+    }
+
+    .threat-name {
+        font-size: 0.85rem;
+    }
+
+    .threat-desc {
+        font-size: 0.75rem;
+    }
+}
+
+/* Case Study Stats - Responsive */
+@media (max-width: 768px) {
+    .case-study-stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-sm);
+        text-align: center;
+    }
+
+    .case-study-stat-value {
+        font-size: 1.3rem;
+    }
+
+    .case-study-stat-label {
+        font-size: 0.7rem;
+    }
+}
