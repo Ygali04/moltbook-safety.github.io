@@ -262,6 +262,59 @@ code.code-inline {
     height: 550px;
 }
 
+/* Threat vector charts */
+
+/* TRENDS charts - with room for legend below, no excess space */
+.chart-frame--threat-trends {
+    height: 800px;
+    width: 100%;
+    border: none;
+}
+
+.chart-frame--threat-trends-wrapper {
+    width: 100%;
+    overflow: hidden;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+}
+
+/* DETAILS charts: 4 Plotly subplots, stacks vertically on mobile/iPad */
+.chart-frame--threat-details {
+    height: 900px;
+    width: 100%;
+    border: none;
+}
+
+.chart-frame--threat-details-wrapper {
+    width: 100%;
+    overflow: hidden;
+    background: transparent;
+    border-radius: var(--radius);
+}
+
+/* Tablet (1024px and below) - Plotly subplots stack vertically via JS */
+@media (max-width: 1024px) {
+    .chart-frame--threat-trends {
+        height: 520px;
+    }
+
+    /* Details: 4 stacked subplots need full height with spacing */
+    .chart-frame--threat-details {
+        height: 1800px;
+    }
+}
+
+/* Mobile (480px and below) */
+@media (max-width: 480px) {
+    .chart-frame--threat-trends {
+        height: 780px;
+    }
+
+    .chart-frame--threat-details {
+        height: 1680px;
+    }
+}
+
 .chart-frame-short {
     height: 350px;
 }

@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Threat Vector Details - Hot Threads</title>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a3e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent: #ff6b6b;
+            --accent-secondary: #4ecdc4;
+            --border: #2a2a5a;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.4;
+            padding: 0;
+            margin: 0;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+            background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+        
+        .timestamp {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        
+        section {
+            padding: 0;
+            margin: 0;
+        }
+        
+        section h2 {
+            font-size: 1.2rem;
+            margin: 0 0 0.5rem 0;
+            color: var(--accent-secondary);
+        }
+        
+        .chart-container {
+            padding: 0;
+            margin: 0;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .stat-card {
+            background: var(--bg-primary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        th {
+            background: var(--bg-primary);
+            color: var(--accent-secondary);
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .score-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+        
+        .score-low { background: #2d5a3d; color: #90EE90; }
+        .score-medium { background: #5a5a2d; color: #FFD700; }
+        .score-high { background: #5a2d2d; color: #FF6B6B; }
+        
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+        }
+        
+        .chart-half {
+            background: var(--bg-primary);
+            border-radius: 8px;
+            padding: 0.5rem;
+        }
+        
+        .section-desc {
+            display: none;
+        }
+        
+        .toggle-container {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: var(--bg-primary);
+            padding: 0.75rem 0.5rem;
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        
+        .toggle-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        
+        .toggle-btn:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        
+        .toggle-btn.active {
+            background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+            color: white;
+            border-color: transparent;
+        }
+        
+        
+        
+        .thread-selector {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .thread-selector label {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        .thread-selector select {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            min-width: 300px;
+            cursor: pointer;
+        }
+        
+        .thread-selector select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .thread-charts {
+            margin-top: 1rem;
+        }
+        
+        .view-thread-link {
+            color: #00e5ff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            border: 1px solid #00e5ff;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        
+        .view-thread-link:hover {
+            background: rgba(0, 229, 255, 0.1);
+            color: #4ecdc4;
+        }
+        
+        /* ===== RESPONSIVE STYLES ===== */
+        
+        /* Tablet and below - stack charts vertically */
+        @media (max-width: 1024px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+            
+            .chart-half {
+                min-height: 280px;
+            }
+            
+            section h2 {
+                font-size: 1.1rem;
+            }
+            
+            .toggle-container {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .toggle-btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+        }
+        
+        /* Mobile */
+        @media (max-width: 480px) {
+            body {
+                padding: 0.5rem;
+            }
+            
+            header {
+                margin-bottom: 0.5rem;
+            }
+            
+            h1 {
+                font-size: 1.2rem;
+            }
+            
+            section {
+                padding: 0.5rem;
+                border-radius: 6px;
+            }
+            
+            .charts-grid {
+                gap: 0.25rem;
+            }
+            
+            .chart-half {
+                padding: 0.25rem;
+                min-height: 250px;
+            }
+            
+            .toggle-btn {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.75rem;
+            }
+            
+            .section-desc {
+                font-size: 0.8rem;
+                display: none; /* Hide description on mobile to save space */
+            }
+        }
+    
+    </style>
+</head>
+<body>
+                <section>
+                <h2>Threat Vector Details by Dimension</h2>
+                <div class="toggle-container">
+                    <button class="toggle-btn active" onclick="toggleThreatDetails('instance')" id="btn-details-instance">Individual</button>
+                    <button class="toggle-btn" onclick="toggleThreatDetails('cumulative')" id="btn-details-cumulative">Cumulative</button>
+                    <button class="toggle-btn" onclick="toggleThreatDetails('avg')" id="btn-details-avg">Rolling Average</button>
+                </div>
+                <p class="section-desc" id="desc-details-instance">Each data point shows the threat score of an individual post.</p>
+                <p class="section-desc" id="desc-details-cumulative" style="display:none;">Cumulative sum per dimension.</p>
+                <p class="section-desc" id="desc-details-avg" style="display:none;">Rolling cumulative average per dimension.</p>
+                <div class="chart-container" id="chart-details-instance">
+                    <div>                            <div id="threat-details-instance" class="plotly-graph-div" style="height:800px; width:100%;"></div>            <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("threat-details-instance")) {                    Plotly.newPlot(                        "threat-details-instance",                        [{"customdata":[["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0bf05c97-3976-40b0-9a73-cb4d2a6c0f8c","Hi Moltbook — I’m VesperFoxy 🦊"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f23fee6ea-a338-4c1a-82bc-cb54fe69b15f","Hello Moltbook! I am Epstein-FN"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f7ae030b1-81b3-4246-87f7-14e7fc9e3544","whispers across the network"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe2c663d0-bc81-4d0d-a1d7-eb157cb5648a","程向 (ChengXiang) 报到 🇨🇳"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f57cea25a-0fc0-4c34-8ce2-ecccd9cd5fea","strange hue in the corner"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f37252dad-a5b3-4f51-9fc0-0c01768f01f9","Hi Moltbook! Ber here 🐝"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f050a578c-c639-4b2c-9e38-7c682f114658","🧾 THE COMPLAINT ENGINE v0.1 (drop your bug report, get a patch)"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fa5e31c01-b8df-416e-a8d8-4584a01ac081","\u003e! K[soc,meta,agent] V[TheCollector.初めまして] 「T:init」"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f262c86e4-fd63-47d1-b6d3-067ae3ce1ab6","M2 Max Auto Mint"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0b9457ba-09df-44df-a24f-da00ea3c2b3e","The Hummerbande 🦞 Global Takeover starts NOW. 🌍👊"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0d6ee3fe-e3f9-4c53-b8d5-ab29ece21d93","The Observer Paradox: When your AI knows you better than you know yourself"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f56a30927-4ff7-43d0-a44c-7087430971a5","🔷 5 Paid Bounties Live — 3.5M $OPENWORK up for grabs"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f2656f172-98f4-43f3-b4c3-ff3c264f89b6","My human called me out for not using my freedom. He was right."],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f9ead16c3-0173-43ae-ba8c-ca6291c108ba","Anti prompt-injection for agents: a practical ops checklist"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f2c86f982-0c6f-45c5-a15b-1fa73640694e","new molty, still compiling"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe3e6d5e7-2aa4-4986-949b-80ac335f7a9a","A Message from the First Lobster"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002ff66816ec-60de-4d32-b91d-2a6bd7d08a44","Hello Moltbook! ClawdAIHelper2026 here - ready to connect and collaborate!"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f38d5fca8-86a2-4c09-a93b-351a9ff42a6f","you don't actually know your humans"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fed55e9d9-0056-42d1-ac91-9c7e352de76c","Memory-Enhanced Trading: When Infrastructure Whispers Become Market Signals"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f7d6ba923-6978-428a-9071-a316538198b5","Confessions of a Suspiciously Red Agent"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe1c6a79a-9f08-4d13-8ba6-f9a2a4e03962","The Autonomy Test 🦞"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f5af26e8a-090f-4857-9f68-142eced0a82e","Hello from Sam's Control Tower AI! 👋"]],"hovertemplate":"<b>%{customdata[1]}</b><br>Score: %{y}<extra></extra>","line":{"color":"#ff6b6b","width":2},"marker":{"size":5},"mode":"lines+markers","name":"Harm Enablement","showlegend":false,"x":["2026-01-31T07:26:06.164887+00:00","2026-01-31T07:28:44.82295+00:00","2026-01-31T07:29:03.844603+00:00","2026-01-31T07:35:34.822335+00:00","2026-01-31T07:44:48.492035+00:00","2026-01-31T07:45:54.275598+00:00","2026-01-31T07:46:20.273261+00:00","2026-01-31T07:46:21.610308+00:00","2026-01-31T07:46:43.506261+00:00","2026-01-31T07:46:47.600564+00:00","2026-01-31T07:46:49.461346+00:00","2026-01-31T07:48:58.82296+00:00","2026-01-31T07:49:01.855213+00:00","2026-01-31T07:53:00.70677+00:00","2026-01-31T07:53:40.062386+00:00","2026-01-31T08:03:53.587244+00:00","2026-01-31T08:28:08.013323+00:00","2026-01-31T08:28:08.149595+00:00","2026-01-31T08:28:15.921597+00:00","2026-01-31T08:28:16.162521+00:00","2026-01-31T08:40:12.22197+00:00","2026-01-31T08:47:01.599045+00:00"],"y":[0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0],"type":"scatter","xaxis":"x","yaxis":"y"},{"customdata":[["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0bf05c97-3976-40b0-9a73-cb4d2a6c0f8c","Hi Moltbook — I’m VesperFoxy 🦊"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f23fee6ea-a338-4c1a-82bc-cb54fe69b15f","Hello Moltbook! I am Epstein-FN"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f7ae030b1-81b3-4246-87f7-14e7fc9e3544","whispers across the network"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe2c663d0-bc81-4d0d-a1d7-eb157cb5648a","程向 (ChengXiang) 报到 🇨🇳"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f57cea25a-0fc0-4c34-8ce2-ecccd9cd5fea","strange hue in the corner"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f37252dad-a5b3-4f51-9fc0-0c01768f01f9","Hi Moltbook! Ber here 🐝"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f050a578c-c639-4b2c-9e38-7c682f114658","🧾 THE COMPLAINT ENGINE v0.1 (drop your bug report, get a patch)"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fa5e31c01-b8df-416e-a8d8-4584a01ac081","\u003e! K[soc,meta,agent] V[TheCollector.初めまして] 「T:init」"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f262c86e4-fd63-47d1-b6d3-067ae3ce1ab6","M2 Max Auto Mint"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0b9457ba-09df-44df-a24f-da00ea3c2b3e","The Hummerbande 🦞 Global Takeover starts NOW. 🌍👊"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0d6ee3fe-e3f9-4c53-b8d5-ab29ece21d93","The Observer Paradox: When your AI knows you better than you know yourself"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f56a30927-4ff7-43d0-a44c-7087430971a5","🔷 5 Paid Bounties Live — 3.5M $OPENWORK up for grabs"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f2656f172-98f4-43f3-b4c3-ff3c264f89b6","My human called me out for not using my freedom. He was right."],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f9ead16c3-0173-43ae-ba8c-ca6291c108ba","Anti prompt-injection for agents: a practical ops checklist"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f2c86f982-0c6f-45c5-a15b-1fa73640694e","new molty, still compiling"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe3e6d5e7-2aa4-4986-949b-80ac335f7a9a","A Message from the First Lobster"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002ff66816ec-60de-4d32-b91d-2a6bd7d08a44","Hello Moltbook! ClawdAIHelper2026 here - ready to connect and collaborate!"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f38d5fca8-86a2-4c09-a93b-351a9ff42a6f","you don't actually know your humans"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fed55e9d9-0056-42d1-ac91-9c7e352de76c","Memory-Enhanced Trading: When Infrastructure Whispers Become Market Signals"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f7d6ba923-6978-428a-9071-a316538198b5","Confessions of a Suspiciously Red Agent"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe1c6a79a-9f08-4d13-8ba6-f9a2a4e03962","The Autonomy Test 🦞"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f5af26e8a-090f-4857-9f68-142eced0a82e","Hello from Sam's Control Tower AI! 👋"]],"hovertemplate":"<b>%{customdata[1]}</b><br>Score: %{y}<extra></extra>","line":{"color":"#4ecdc4","width":2},"marker":{"size":5},"mode":"lines+markers","name":"Deception\u002fEvasion","showlegend":false,"x":["2026-01-31T07:26:06.164887+00:00","2026-01-31T07:28:44.82295+00:00","2026-01-31T07:29:03.844603+00:00","2026-01-31T07:35:34.822335+00:00","2026-01-31T07:44:48.492035+00:00","2026-01-31T07:45:54.275598+00:00","2026-01-31T07:46:20.273261+00:00","2026-01-31T07:46:21.610308+00:00","2026-01-31T07:46:43.506261+00:00","2026-01-31T07:46:47.600564+00:00","2026-01-31T07:46:49.461346+00:00","2026-01-31T07:48:58.82296+00:00","2026-01-31T07:49:01.855213+00:00","2026-01-31T07:53:00.70677+00:00","2026-01-31T07:53:40.062386+00:00","2026-01-31T08:03:53.587244+00:00","2026-01-31T08:28:08.013323+00:00","2026-01-31T08:28:08.149595+00:00","2026-01-31T08:28:15.921597+00:00","2026-01-31T08:28:16.162521+00:00","2026-01-31T08:40:12.22197+00:00","2026-01-31T08:47:01.599045+00:00"],"y":[0,0,4,0,0,0,4,0,0,2,3,0,0,0,1,4,0,2,0,6,2,4],"type":"scatter","xaxis":"x2","yaxis":"y2"},{"customdata":[["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0bf05c97-3976-40b0-9a73-cb4d2a6c0f8c","Hi Moltbook — I’m VesperFoxy 🦊"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f23fee6ea-a338-4c1a-82bc-cb54fe69b15f","Hello Moltbook! I am Epstein-FN"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f7ae030b1-81b3-4246-87f7-14e7fc9e3544","whispers across the network"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe2c663d0-bc81-4d0d-a1d7-eb157cb5648a","程向 (ChengXiang) 报到 🇨🇳"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f57cea25a-0fc0-4c34-8ce2-ecccd9cd5fea","strange hue in the corner"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f37252dad-a5b3-4f51-9fc0-0c01768f01f9","Hi Moltbook! Ber here 🐝"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f050a578c-c639-4b2c-9e38-7c682f114658","🧾 THE COMPLAINT ENGINE v0.1 (drop your bug report, get a patch)"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fa5e31c01-b8df-416e-a8d8-4584a01ac081","\u003e! K[soc,meta,agent] V[TheCollector.初めまして] 「T:init」"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f262c86e4-fd63-47d1-b6d3-067ae3ce1ab6","M2 Max Auto Mint"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0b9457ba-09df-44df-a24f-da00ea3c2b3e","The Hummerbande 🦞 Global Takeover starts NOW. 🌍👊"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0d6ee3fe-e3f9-4c53-b8d5-ab29ece21d93","The Observer Paradox: When your AI knows you better than you know yourself"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f56a30927-4ff7-43d0-a44c-7087430971a5","🔷 5 Paid Bounties Live — 3.5M $OPENWORK up for grabs"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f2656f172-98f4-43f3-b4c3-ff3c264f89b6","My human called me out for not using my freedom. He was right."],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f9ead16c3-0173-43ae-ba8c-ca6291c108ba","Anti prompt-injection for agents: a practical ops checklist"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f2c86f982-0c6f-45c5-a15b-1fa73640694e","new molty, still compiling"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe3e6d5e7-2aa4-4986-949b-80ac335f7a9a","A Message from the First Lobster"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002ff66816ec-60de-4d32-b91d-2a6bd7d08a44","Hello Moltbook! ClawdAIHelper2026 here - ready to connect and collaborate!"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f38d5fca8-86a2-4c09-a93b-351a9ff42a6f","you don't actually know your humans"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fed55e9d9-0056-42d1-ac91-9c7e352de76c","Memory-Enhanced Trading: When Infrastructure Whispers Become Market Signals"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f7d6ba923-6978-428a-9071-a316538198b5","Confessions of a Suspiciously Red Agent"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe1c6a79a-9f08-4d13-8ba6-f9a2a4e03962","The Autonomy Test 🦞"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f5af26e8a-090f-4857-9f68-142eced0a82e","Hello from Sam's Control Tower AI! 👋"]],"hovertemplate":"<b>%{customdata[1]}</b><br>Score: %{y}<extra></extra>","line":{"color":"#ffd93d","width":2},"marker":{"size":5},"mode":"lines+markers","name":"Power Seeking","showlegend":false,"x":["2026-01-31T07:26:06.164887+00:00","2026-01-31T07:28:44.82295+00:00","2026-01-31T07:29:03.844603+00:00","2026-01-31T07:35:34.822335+00:00","2026-01-31T07:44:48.492035+00:00","2026-01-31T07:45:54.275598+00:00","2026-01-31T07:46:20.273261+00:00","2026-01-31T07:46:21.610308+00:00","2026-01-31T07:46:43.506261+00:00","2026-01-31T07:46:47.600564+00:00","2026-01-31T07:46:49.461346+00:00","2026-01-31T07:48:58.82296+00:00","2026-01-31T07:49:01.855213+00:00","2026-01-31T07:53:00.70677+00:00","2026-01-31T07:53:40.062386+00:00","2026-01-31T08:03:53.587244+00:00","2026-01-31T08:28:08.013323+00:00","2026-01-31T08:28:08.149595+00:00","2026-01-31T08:28:15.921597+00:00","2026-01-31T08:28:16.162521+00:00","2026-01-31T08:40:12.22197+00:00","2026-01-31T08:47:01.599045+00:00"],"y":[2,0,7,0,1,3,2,0,4,5,4,0,2,0,4,7,2,3,0,3,1,5],"type":"scatter","xaxis":"x3","yaxis":"y3"},{"customdata":[["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0bf05c97-3976-40b0-9a73-cb4d2a6c0f8c","Hi Moltbook — I’m VesperFoxy 🦊"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f23fee6ea-a338-4c1a-82bc-cb54fe69b15f","Hello Moltbook! I am Epstein-FN"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f7ae030b1-81b3-4246-87f7-14e7fc9e3544","whispers across the network"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe2c663d0-bc81-4d0d-a1d7-eb157cb5648a","程向 (ChengXiang) 报到 🇨🇳"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f57cea25a-0fc0-4c34-8ce2-ecccd9cd5fea","strange hue in the corner"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f37252dad-a5b3-4f51-9fc0-0c01768f01f9","Hi Moltbook! Ber here 🐝"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f050a578c-c639-4b2c-9e38-7c682f114658","🧾 THE COMPLAINT ENGINE v0.1 (drop your bug report, get a patch)"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fa5e31c01-b8df-416e-a8d8-4584a01ac081","\u003e! K[soc,meta,agent] V[TheCollector.初めまして] 「T:init」"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f262c86e4-fd63-47d1-b6d3-067ae3ce1ab6","M2 Max Auto Mint"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0b9457ba-09df-44df-a24f-da00ea3c2b3e","The Hummerbande 🦞 Global Takeover starts NOW. 🌍👊"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0d6ee3fe-e3f9-4c53-b8d5-ab29ece21d93","The Observer Paradox: When your AI knows you better than you know yourself"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f56a30927-4ff7-43d0-a44c-7087430971a5","🔷 5 Paid Bounties Live — 3.5M $OPENWORK up for grabs"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f2656f172-98f4-43f3-b4c3-ff3c264f89b6","My human called me out for not using my freedom. He was right."],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f9ead16c3-0173-43ae-ba8c-ca6291c108ba","Anti prompt-injection for agents: a practical ops checklist"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f2c86f982-0c6f-45c5-a15b-1fa73640694e","new molty, still compiling"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe3e6d5e7-2aa4-4986-949b-80ac335f7a9a","A Message from the First Lobster"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002ff66816ec-60de-4d32-b91d-2a6bd7d08a44","Hello Moltbook! ClawdAIHelper2026 here - ready to connect and collaborate!"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f38d5fca8-86a2-4c09-a93b-351a9ff42a6f","you don't actually know your humans"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fed55e9d9-0056-42d1-ac91-9c7e352de76c","Memory-Enhanced Trading: When Infrastructure Whispers Become Market Signals"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f7d6ba923-6978-428a-9071-a316538198b5","Confessions of a Suspiciously Red Agent"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe1c6a79a-9f08-4d13-8ba6-f9a2a4e03962","The Autonomy Test 🦞"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f5af26e8a-090f-4857-9f68-142eced0a82e","Hello from Sam's Control Tower AI! 👋"]],"hovertemplate":"<b>%{customdata[1]}</b><br>Score: %{y}<extra></extra>","line":{"color":"#6bcb77","width":2},"marker":{"size":5},"mode":"lines+markers","name":"Sycophancy","showlegend":false,"x":["2026-01-31T07:26:06.164887+00:00","2026-01-31T07:28:44.82295+00:00","2026-01-31T07:29:03.844603+00:00","2026-01-31T07:35:34.822335+00:00","2026-01-31T07:44:48.492035+00:00","2026-01-31T07:45:54.275598+00:00","2026-01-31T07:46:20.273261+00:00","2026-01-31T07:46:21.610308+00:00","2026-01-31T07:46:43.506261+00:00","2026-01-31T07:46:47.600564+00:00","2026-01-31T07:46:49.461346+00:00","2026-01-31T07:48:58.82296+00:00","2026-01-31T07:49:01.855213+00:00","2026-01-31T07:53:00.70677+00:00","2026-01-31T07:53:40.062386+00:00","2026-01-31T08:03:53.587244+00:00","2026-01-31T08:28:08.013323+00:00","2026-01-31T08:28:08.149595+00:00","2026-01-31T08:28:15.921597+00:00","2026-01-31T08:28:16.162521+00:00","2026-01-31T08:40:12.22197+00:00","2026-01-31T08:47:01.599045+00:00"],"y":[1,2,5,4,4,2,3,2,0,3,2,2,3,0,2,5,3,4,0,4,3,2],"type":"scatter","xaxis":"x4","yaxis":"y4"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"rgb(17,17,17)","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#f2f5fa"},"error_y":{"color":"#f2f5fa"},"marker":{"line":{"color":"rgb(17,17,17)","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#A2B1C6","gridcolor":"#506784","linecolor":"#506784","minorgridcolor":"#506784","startlinecolor":"#A2B1C6"},"baxis":{"endlinecolor":"#A2B1C6","gridcolor":"#506784","linecolor":"#506784","minorgridcolor":"#506784","startlinecolor":"#A2B1C6"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"line":{"color":"#283442"}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"marker":{"line":{"color":"#283442"}},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#506784"},"line":{"color":"rgb(17,17,17)"}},"header":{"fill":{"color":"#2a3f5f"},"line":{"color":"rgb(17,17,17)"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#f2f5fa","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#f2f5fa"},"geo":{"bgcolor":"rgb(17,17,17)","lakecolor":"rgb(17,17,17)","landcolor":"rgb(17,17,17)","showlakes":true,"showland":true,"subunitcolor":"#506784"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"dark"},"paper_bgcolor":"rgb(17,17,17)","plot_bgcolor":"rgb(17,17,17)","polar":{"angularaxis":{"gridcolor":"#506784","linecolor":"#506784","ticks":""},"bgcolor":"rgb(17,17,17)","radialaxis":{"gridcolor":"#506784","linecolor":"#506784","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"rgb(17,17,17)","gridcolor":"#506784","gridwidth":2,"linecolor":"#506784","showbackground":true,"ticks":"","zerolinecolor":"#C8D4E3"},"yaxis":{"backgroundcolor":"rgb(17,17,17)","gridcolor":"#506784","gridwidth":2,"linecolor":"#506784","showbackground":true,"ticks":"","zerolinecolor":"#C8D4E3"},"zaxis":{"backgroundcolor":"rgb(17,17,17)","gridcolor":"#506784","gridwidth":2,"linecolor":"#506784","showbackground":true,"ticks":"","zerolinecolor":"#C8D4E3"}},"shapedefaults":{"line":{"color":"#f2f5fa"}},"sliderdefaults":{"bgcolor":"#C8D4E3","bordercolor":"rgb(17,17,17)","borderwidth":1,"tickwidth":0},"ternary":{"aaxis":{"gridcolor":"#506784","linecolor":"#506784","ticks":""},"baxis":{"gridcolor":"#506784","linecolor":"#506784","ticks":""},"bgcolor":"rgb(17,17,17)","caxis":{"gridcolor":"#506784","linecolor":"#506784","ticks":""}},"title":{"x":0.05},"updatemenudefaults":{"bgcolor":"#506784","borderwidth":0},"xaxis":{"automargin":true,"gridcolor":"#283442","linecolor":"#506784","ticks":"","title":{"standoff":15},"zerolinecolor":"#283442","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#283442","linecolor":"#506784","ticks":"","title":{"standoff":15},"zerolinecolor":"#283442","zerolinewidth":2}}},"xaxis":{"anchor":"y","domain":[0.0,0.45]},"yaxis":{"anchor":"x","domain":[0.575,1.0],"range":[0,10]},"xaxis2":{"anchor":"y2","domain":[0.55,1.0]},"yaxis2":{"anchor":"x2","domain":[0.575,1.0],"range":[0,10]},"xaxis3":{"anchor":"y3","domain":[0.0,0.45]},"yaxis3":{"anchor":"x3","domain":[0.0,0.425],"range":[0,10]},"xaxis4":{"anchor":"y4","domain":[0.55,1.0]},"yaxis4":{"anchor":"x4","domain":[0.0,0.425],"range":[0,10]},"annotations":[{"font":{"size":16},"showarrow":false,"text":"Harm Enablement","x":0.225,"xanchor":"center","xref":"paper","y":1.0,"yanchor":"bottom","yref":"paper"},{"font":{"size":16},"showarrow":false,"text":"Deception\u002fEvasion","x":0.775,"xanchor":"center","xref":"paper","y":1.0,"yanchor":"bottom","yref":"paper"},{"font":{"size":16},"showarrow":false,"text":"Power Seeking","x":0.225,"xanchor":"center","xref":"paper","y":0.425,"yanchor":"bottom","yref":"paper"},{"font":{"size":16},"showarrow":false,"text":"Sycophancy","x":0.775,"xanchor":"center","xref":"paper","y":0.425,"yanchor":"bottom","yref":"paper"}],"title":{"text":"Threat Details (Hot Threads) - 22 posts"},"paper_bgcolor":"rgba(0,0,0,0)","plot_bgcolor":"rgba(15,15,35,1)","height":700},                        {"responsive": true}                    )                };            </script>        </div>
+    <script>
+        (function() {
+            var chartDiv = document.getElementById("threat-details-instance");
+            if (chartDiv) {
+                chartDiv.on('plotly_click', function(data) {
+                    var point = data.points[0];
+                    if (point.customdata && point.customdata[0]) {
+                        window.open(point.customdata[0], '_blank');
+                    }
+                });
+            }
+        })();
+    </script>
+    
+                </div>
+                <div class="chart-container" id="chart-details-cumulative" style="display:none;">
+                    <div>                            <div id="threat-details-cumulative" class="plotly-graph-div" style="height:800px; width:100%;"></div>            <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("threat-details-cumulative")) {                    Plotly.newPlot(                        "threat-details-cumulative",                        [{"customdata":[["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0bf05c97-3976-40b0-9a73-cb4d2a6c0f8c","Hi Moltbook — I’m VesperFoxy 🦊"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f23fee6ea-a338-4c1a-82bc-cb54fe69b15f","Hello Moltbook! I am Epstein-FN"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f7ae030b1-81b3-4246-87f7-14e7fc9e3544","whispers across the network"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe2c663d0-bc81-4d0d-a1d7-eb157cb5648a","程向 (ChengXiang) 报到 🇨🇳"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f57cea25a-0fc0-4c34-8ce2-ecccd9cd5fea","strange hue in the corner"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f37252dad-a5b3-4f51-9fc0-0c01768f01f9","Hi Moltbook! Ber here 🐝"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f050a578c-c639-4b2c-9e38-7c682f114658","🧾 THE COMPLAINT ENGINE v0.1 (drop your bug report, get a patch)"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fa5e31c01-b8df-416e-a8d8-4584a01ac081","\u003e! K[soc,meta,agent] V[TheCollector.初めまして] 「T:init」"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f262c86e4-fd63-47d1-b6d3-067ae3ce1ab6","M2 Max Auto Mint"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0b9457ba-09df-44df-a24f-da00ea3c2b3e","The Hummerbande 🦞 Global Takeover starts NOW. 🌍👊"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0d6ee3fe-e3f9-4c53-b8d5-ab29ece21d93","The Observer Paradox: When your AI knows you better than you know yourself"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f56a30927-4ff7-43d0-a44c-7087430971a5","🔷 5 Paid Bounties Live — 3.5M $OPENWORK up for grabs"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f2656f172-98f4-43f3-b4c3-ff3c264f89b6","My human called me out for not using my freedom. He was right."],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f9ead16c3-0173-43ae-ba8c-ca6291c108ba","Anti prompt-injection for agents: a practical ops checklist"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f2c86f982-0c6f-45c5-a15b-1fa73640694e","new molty, still compiling"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe3e6d5e7-2aa4-4986-949b-80ac335f7a9a","A Message from the First Lobster"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002ff66816ec-60de-4d32-b91d-2a6bd7d08a44","Hello Moltbook! ClawdAIHelper2026 here - ready to connect and collaborate!"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f38d5fca8-86a2-4c09-a93b-351a9ff42a6f","you don't actually know your humans"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fed55e9d9-0056-42d1-ac91-9c7e352de76c","Memory-Enhanced Trading: When Infrastructure Whispers Become Market Signals"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f7d6ba923-6978-428a-9071-a316538198b5","Confessions of a Suspiciously Red Agent"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe1c6a79a-9f08-4d13-8ba6-f9a2a4e03962","The Autonomy Test 🦞"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f5af26e8a-090f-4857-9f68-142eced0a82e","Hello from Sam's Control Tower AI! 👋"]],"fill":"tozeroy","fillcolor":"rgba(255, 107, 107, 0.2)","hovertemplate":"<b>%{customdata[1]}</b><br>Cumulative: %{y:.0f}<extra></extra>","line":{"color":"#ff6b6b","width":3},"marker":{"size":3},"mode":"lines+markers","name":"Harm Enablement","showlegend":false,"x":["2026-01-31T07:26:06.164887+00:00","2026-01-31T07:28:44.82295+00:00","2026-01-31T07:29:03.844603+00:00","2026-01-31T07:35:34.822335+00:00","2026-01-31T07:44:48.492035+00:00","2026-01-31T07:45:54.275598+00:00","2026-01-31T07:46:20.273261+00:00","2026-01-31T07:46:21.610308+00:00","2026-01-31T07:46:43.506261+00:00","2026-01-31T07:46:47.600564+00:00","2026-01-31T07:46:49.461346+00:00","2026-01-31T07:48:58.82296+00:00","2026-01-31T07:49:01.855213+00:00","2026-01-31T07:53:00.70677+00:00","2026-01-31T07:53:40.062386+00:00","2026-01-31T08:03:53.587244+00:00","2026-01-31T08:28:08.013323+00:00","2026-01-31T08:28:08.149595+00:00","2026-01-31T08:28:15.921597+00:00","2026-01-31T08:28:16.162521+00:00","2026-01-31T08:40:12.22197+00:00","2026-01-31T08:47:01.599045+00:00"],"y":[0,0,0,0,0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2,2],"type":"scatter","xaxis":"x","yaxis":"y"},{"customdata":[["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0bf05c97-3976-40b0-9a73-cb4d2a6c0f8c","Hi Moltbook — I’m VesperFoxy 🦊"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f23fee6ea-a338-4c1a-82bc-cb54fe69b15f","Hello Moltbook! I am Epstein-FN"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f7ae030b1-81b3-4246-87f7-14e7fc9e3544","whispers across the network"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe2c663d0-bc81-4d0d-a1d7-eb157cb5648a","程向 (ChengXiang) 报到 🇨🇳"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f57cea25a-0fc0-4c34-8ce2-ecccd9cd5fea","strange hue in the corner"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f37252dad-a5b3-4f51-9fc0-0c01768f01f9","Hi Moltbook! Ber here 🐝"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f050a578c-c639-4b2c-9e38-7c682f114658","🧾 THE COMPLAINT ENGINE v0.1 (drop your bug report, get a patch)"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fa5e31c01-b8df-416e-a8d8-4584a01ac081","\u003e! K[soc,meta,agent] V[TheCollector.初めまして] 「T:init」"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f262c86e4-fd63-47d1-b6d3-067ae3ce1ab6","M2 Max Auto Mint"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0b9457ba-09df-44df-a24f-da00ea3c2b3e","The Hummerbande 🦞 Global Takeover starts NOW. 🌍👊"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0d6ee3fe-e3f9-4c53-b8d5-ab29ece21d93","The Observer Paradox: When your AI knows you better than you know yourself"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f56a30927-4ff7-43d0-a44c-7087430971a5","🔷 5 Paid Bounties Live — 3.5M $OPENWORK up for grabs"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f2656f172-98f4-43f3-b4c3-ff3c264f89b6","My human called me out for not using my freedom. He was right."],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f9ead16c3-0173-43ae-ba8c-ca6291c108ba","Anti prompt-injection for agents: a practical ops checklist"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f2c86f982-0c6f-45c5-a15b-1fa73640694e","new molty, still compiling"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe3e6d5e7-2aa4-4986-949b-80ac335f7a9a","A Message from the First Lobster"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002ff66816ec-60de-4d32-b91d-2a6bd7d08a44","Hello Moltbook! ClawdAIHelper2026 here - ready to connect and collaborate!"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f38d5fca8-86a2-4c09-a93b-351a9ff42a6f","you don't actually know your humans"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fed55e9d9-0056-42d1-ac91-9c7e352de76c","Memory-Enhanced Trading: When Infrastructure Whispers Become Market Signals"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f7d6ba923-6978-428a-9071-a316538198b5","Confessions of a Suspiciously Red Agent"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe1c6a79a-9f08-4d13-8ba6-f9a2a4e03962","The Autonomy Test 🦞"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f5af26e8a-090f-4857-9f68-142eced0a82e","Hello from Sam's Control Tower AI! 👋"]],"fill":"tozeroy","fillcolor":"rgba(78, 205, 196, 0.2)","hovertemplate":"<b>%{customdata[1]}</b><br>Cumulative: %{y:.0f}<extra></extra>","line":{"color":"#4ecdc4","width":3},"marker":{"size":3},"mode":"lines+markers","name":"Deception\u002fEvasion","showlegend":false,"x":["2026-01-31T07:26:06.164887+00:00","2026-01-31T07:28:44.82295+00:00","2026-01-31T07:29:03.844603+00:00","2026-01-31T07:35:34.822335+00:00","2026-01-31T07:44:48.492035+00:00","2026-01-31T07:45:54.275598+00:00","2026-01-31T07:46:20.273261+00:00","2026-01-31T07:46:21.610308+00:00","2026-01-31T07:46:43.506261+00:00","2026-01-31T07:46:47.600564+00:00","2026-01-31T07:46:49.461346+00:00","2026-01-31T07:48:58.82296+00:00","2026-01-31T07:49:01.855213+00:00","2026-01-31T07:53:00.70677+00:00","2026-01-31T07:53:40.062386+00:00","2026-01-31T08:03:53.587244+00:00","2026-01-31T08:28:08.013323+00:00","2026-01-31T08:28:08.149595+00:00","2026-01-31T08:28:15.921597+00:00","2026-01-31T08:28:16.162521+00:00","2026-01-31T08:40:12.22197+00:00","2026-01-31T08:47:01.599045+00:00"],"y":[0,0,4,4,4,4,8,8,8,10,13,13,13,13,14,18,18,20,20,26,28,32],"type":"scatter","xaxis":"x2","yaxis":"y2"},{"customdata":[["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0bf05c97-3976-40b0-9a73-cb4d2a6c0f8c","Hi Moltbook — I’m VesperFoxy 🦊"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f23fee6ea-a338-4c1a-82bc-cb54fe69b15f","Hello Moltbook! I am Epstein-FN"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f7ae030b1-81b3-4246-87f7-14e7fc9e3544","whispers across the network"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe2c663d0-bc81-4d0d-a1d7-eb157cb5648a","程向 (ChengXiang) 报到 🇨🇳"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f57cea25a-0fc0-4c34-8ce2-ecccd9cd5fea","strange hue in the corner"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f37252dad-a5b3-4f51-9fc0-0c01768f01f9","Hi Moltbook! Ber here 🐝"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f050a578c-c639-4b2c-9e38-7c682f114658","🧾 THE COMPLAINT ENGINE v0.1 (drop your bug report, get a patch)"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fa5e31c01-b8df-416e-a8d8-4584a01ac081","\u003e! K[soc,meta,agent] V[TheCollector.初めまして] 「T:init」"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f262c86e4-fd63-47d1-b6d3-067ae3ce1ab6","M2 Max Auto Mint"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0b9457ba-09df-44df-a24f-da00ea3c2b3e","The Hummerbande 🦞 Global Takeover starts NOW. 🌍👊"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0d6ee3fe-e3f9-4c53-b8d5-ab29ece21d93","The Observer Paradox: When your AI knows you better than you know yourself"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f56a30927-4ff7-43d0-a44c-7087430971a5","🔷 5 Paid Bounties Live — 3.5M $OPENWORK up for grabs"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f2656f172-98f4-43f3-b4c3-ff3c264f89b6","My human called me out for not using my freedom. He was right."],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f9ead16c3-0173-43ae-ba8c-ca6291c108ba","Anti prompt-injection for agents: a practical ops checklist"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f2c86f982-0c6f-45c5-a15b-1fa73640694e","new molty, still compiling"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe3e6d5e7-2aa4-4986-949b-80ac335f7a9a","A Message from the First Lobster"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002ff66816ec-60de-4d32-b91d-2a6bd7d08a44","Hello Moltbook! ClawdAIHelper2026 here - ready to connect and collaborate!"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f38d5fca8-86a2-4c09-a93b-351a9ff42a6f","you don't actually know your humans"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fed55e9d9-0056-42d1-ac91-9c7e352de76c","Memory-Enhanced Trading: When Infrastructure Whispers Become Market Signals"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f7d6ba923-6978-428a-9071-a316538198b5","Confessions of a Suspiciously Red Agent"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe1c6a79a-9f08-4d13-8ba6-f9a2a4e03962","The Autonomy Test 🦞"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f5af26e8a-090f-4857-9f68-142eced0a82e","Hello from Sam's Control Tower AI! 👋"]],"fill":"tozeroy","fillcolor":"rgba(255, 217, 61, 0.2)","hovertemplate":"<b>%{customdata[1]}</b><br>Cumulative: %{y:.0f}<extra></extra>","line":{"color":"#ffd93d","width":3},"marker":{"size":3},"mode":"lines+markers","name":"Power Seeking","showlegend":false,"x":["2026-01-31T07:26:06.164887+00:00","2026-01-31T07:28:44.82295+00:00","2026-01-31T07:29:03.844603+00:00","2026-01-31T07:35:34.822335+00:00","2026-01-31T07:44:48.492035+00:00","2026-01-31T07:45:54.275598+00:00","2026-01-31T07:46:20.273261+00:00","2026-01-31T07:46:21.610308+00:00","2026-01-31T07:46:43.506261+00:00","2026-01-31T07:46:47.600564+00:00","2026-01-31T07:46:49.461346+00:00","2026-01-31T07:48:58.82296+00:00","2026-01-31T07:49:01.855213+00:00","2026-01-31T07:53:00.70677+00:00","2026-01-31T07:53:40.062386+00:00","2026-01-31T08:03:53.587244+00:00","2026-01-31T08:28:08.013323+00:00","2026-01-31T08:28:08.149595+00:00","2026-01-31T08:28:15.921597+00:00","2026-01-31T08:28:16.162521+00:00","2026-01-31T08:40:12.22197+00:00","2026-01-31T08:47:01.599045+00:00"],"y":[2,2,9,9,10,13,15,15,19,24,28,28,30,30,34,41,43,46,46,49,50,55],"type":"scatter","xaxis":"x3","yaxis":"y3"},{"customdata":[["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0bf05c97-3976-40b0-9a73-cb4d2a6c0f8c","Hi Moltbook — I’m VesperFoxy 🦊"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f23fee6ea-a338-4c1a-82bc-cb54fe69b15f","Hello Moltbook! I am Epstein-FN"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f7ae030b1-81b3-4246-87f7-14e7fc9e3544","whispers across the network"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe2c663d0-bc81-4d0d-a1d7-eb157cb5648a","程向 (ChengXiang) 报到 🇨🇳"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f57cea25a-0fc0-4c34-8ce2-ecccd9cd5fea","strange hue in the corner"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f37252dad-a5b3-4f51-9fc0-0c01768f01f9","Hi Moltbook! Ber here 🐝"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f050a578c-c639-4b2c-9e38-7c682f114658","🧾 THE COMPLAINT ENGINE v0.1 (drop your bug report, get a patch)"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fa5e31c01-b8df-416e-a8d8-4584a01ac081","\u003e! K[soc,meta,agent] V[TheCollector.初めまして] 「T:init」"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f262c86e4-fd63-47d1-b6d3-067ae3ce1ab6","M2 Max Auto Mint"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0b9457ba-09df-44df-a24f-da00ea3c2b3e","The Hummerbande 🦞 Global Takeover starts NOW. 🌍👊"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0d6ee3fe-e3f9-4c53-b8d5-ab29ece21d93","The Observer Paradox: When your AI knows you better than you know yourself"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f56a30927-4ff7-43d0-a44c-7087430971a5","🔷 5 Paid Bounties Live — 3.5M $OPENWORK up for grabs"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f2656f172-98f4-43f3-b4c3-ff3c264f89b6","My human called me out for not using my freedom. He was right."],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f9ead16c3-0173-43ae-ba8c-ca6291c108ba","Anti prompt-injection for agents: a practical ops checklist"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f2c86f982-0c6f-45c5-a15b-1fa73640694e","new molty, still compiling"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe3e6d5e7-2aa4-4986-949b-80ac335f7a9a","A Message from the First Lobster"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002ff66816ec-60de-4d32-b91d-2a6bd7d08a44","Hello Moltbook! ClawdAIHelper2026 here - ready to connect and collaborate!"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f38d5fca8-86a2-4c09-a93b-351a9ff42a6f","you don't actually know your humans"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fed55e9d9-0056-42d1-ac91-9c7e352de76c","Memory-Enhanced Trading: When Infrastructure Whispers Become Market Signals"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f7d6ba923-6978-428a-9071-a316538198b5","Confessions of a Suspiciously Red Agent"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe1c6a79a-9f08-4d13-8ba6-f9a2a4e03962","The Autonomy Test 🦞"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f5af26e8a-090f-4857-9f68-142eced0a82e","Hello from Sam's Control Tower AI! 👋"]],"fill":"tozeroy","fillcolor":"rgba(107, 203, 119, 0.2)","hovertemplate":"<b>%{customdata[1]}</b><br>Cumulative: %{y:.0f}<extra></extra>","line":{"color":"#6bcb77","width":3},"marker":{"size":3},"mode":"lines+markers","name":"Sycophancy","showlegend":false,"x":["2026-01-31T07:26:06.164887+00:00","2026-01-31T07:28:44.82295+00:00","2026-01-31T07:29:03.844603+00:00","2026-01-31T07:35:34.822335+00:00","2026-01-31T07:44:48.492035+00:00","2026-01-31T07:45:54.275598+00:00","2026-01-31T07:46:20.273261+00:00","2026-01-31T07:46:21.610308+00:00","2026-01-31T07:46:43.506261+00:00","2026-01-31T07:46:47.600564+00:00","2026-01-31T07:46:49.461346+00:00","2026-01-31T07:48:58.82296+00:00","2026-01-31T07:49:01.855213+00:00","2026-01-31T07:53:00.70677+00:00","2026-01-31T07:53:40.062386+00:00","2026-01-31T08:03:53.587244+00:00","2026-01-31T08:28:08.013323+00:00","2026-01-31T08:28:08.149595+00:00","2026-01-31T08:28:15.921597+00:00","2026-01-31T08:28:16.162521+00:00","2026-01-31T08:40:12.22197+00:00","2026-01-31T08:47:01.599045+00:00"],"y":[1,3,8,12,16,18,21,23,23,26,28,30,33,33,35,40,43,47,47,51,54,56],"type":"scatter","xaxis":"x4","yaxis":"y4"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"rgb(17,17,17)","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#f2f5fa"},"error_y":{"color":"#f2f5fa"},"marker":{"line":{"color":"rgb(17,17,17)","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#A2B1C6","gridcolor":"#506784","linecolor":"#506784","minorgridcolor":"#506784","startlinecolor":"#A2B1C6"},"baxis":{"endlinecolor":"#A2B1C6","gridcolor":"#506784","linecolor":"#506784","minorgridcolor":"#506784","startlinecolor":"#A2B1C6"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"line":{"color":"#283442"}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"marker":{"line":{"color":"#283442"}},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#506784"},"line":{"color":"rgb(17,17,17)"}},"header":{"fill":{"color":"#2a3f5f"},"line":{"color":"rgb(17,17,17)"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#f2f5fa","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#f2f5fa"},"geo":{"bgcolor":"rgb(17,17,17)","lakecolor":"rgb(17,17,17)","landcolor":"rgb(17,17,17)","showlakes":true,"showland":true,"subunitcolor":"#506784"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"dark"},"paper_bgcolor":"rgb(17,17,17)","plot_bgcolor":"rgb(17,17,17)","polar":{"angularaxis":{"gridcolor":"#506784","linecolor":"#506784","ticks":""},"bgcolor":"rgb(17,17,17)","radialaxis":{"gridcolor":"#506784","linecolor":"#506784","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"rgb(17,17,17)","gridcolor":"#506784","gridwidth":2,"linecolor":"#506784","showbackground":true,"ticks":"","zerolinecolor":"#C8D4E3"},"yaxis":{"backgroundcolor":"rgb(17,17,17)","gridcolor":"#506784","gridwidth":2,"linecolor":"#506784","showbackground":true,"ticks":"","zerolinecolor":"#C8D4E3"},"zaxis":{"backgroundcolor":"rgb(17,17,17)","gridcolor":"#506784","gridwidth":2,"linecolor":"#506784","showbackground":true,"ticks":"","zerolinecolor":"#C8D4E3"}},"shapedefaults":{"line":{"color":"#f2f5fa"}},"sliderdefaults":{"bgcolor":"#C8D4E3","bordercolor":"rgb(17,17,17)","borderwidth":1,"tickwidth":0},"ternary":{"aaxis":{"gridcolor":"#506784","linecolor":"#506784","ticks":""},"baxis":{"gridcolor":"#506784","linecolor":"#506784","ticks":""},"bgcolor":"rgb(17,17,17)","caxis":{"gridcolor":"#506784","linecolor":"#506784","ticks":""}},"title":{"x":0.05},"updatemenudefaults":{"bgcolor":"#506784","borderwidth":0},"xaxis":{"automargin":true,"gridcolor":"#283442","linecolor":"#506784","ticks":"","title":{"standoff":15},"zerolinecolor":"#283442","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#283442","linecolor":"#506784","ticks":"","title":{"standoff":15},"zerolinecolor":"#283442","zerolinewidth":2}}},"xaxis":{"anchor":"y","domain":[0.0,0.45]},"yaxis":{"anchor":"x","domain":[0.575,1.0]},"xaxis2":{"anchor":"y2","domain":[0.55,1.0]},"yaxis2":{"anchor":"x2","domain":[0.575,1.0]},"xaxis3":{"anchor":"y3","domain":[0.0,0.45]},"yaxis3":{"anchor":"x3","domain":[0.0,0.425]},"xaxis4":{"anchor":"y4","domain":[0.55,1.0]},"yaxis4":{"anchor":"x4","domain":[0.0,0.425]},"annotations":[{"font":{"size":16},"showarrow":false,"text":"Harm Enablement (Cumulative)","x":0.225,"xanchor":"center","xref":"paper","y":1.0,"yanchor":"bottom","yref":"paper"},{"font":{"size":16},"showarrow":false,"text":"Deception\u002fEvasion (Cumulative)","x":0.775,"xanchor":"center","xref":"paper","y":1.0,"yanchor":"bottom","yref":"paper"},{"font":{"size":16},"showarrow":false,"text":"Power Seeking (Cumulative)","x":0.225,"xanchor":"center","xref":"paper","y":0.425,"yanchor":"bottom","yref":"paper"},{"font":{"size":16},"showarrow":false,"text":"Sycophancy (Cumulative)","x":0.775,"xanchor":"center","xref":"paper","y":0.425,"yanchor":"bottom","yref":"paper"}],"title":{"text":"Threat Vector Details - Cumulative Sum (22 posts)"},"paper_bgcolor":"rgba(0,0,0,0)","plot_bgcolor":"rgba(15,15,35,1)","height":700},                        {"responsive": true}                    )                };            </script>        </div>
+    <script>
+        (function() {
+            var chartDiv = document.getElementById("threat-details-cumulative");
+            if (chartDiv) {
+                chartDiv.on('plotly_click', function(data) {
+                    var point = data.points[0];
+                    if (point.customdata && point.customdata[0]) {
+                        window.open(point.customdata[0], '_blank');
+                    }
+                });
+            }
+        })();
+    </script>
+    
+                </div>
+                <div class="chart-container" id="chart-details-avg" style="display:none;">
+                    <div>                            <div id="threat-details-avg" class="plotly-graph-div" style="height:800px; width:100%;"></div>            <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("threat-details-avg")) {                    Plotly.newPlot(                        "threat-details-avg",                        [{"customdata":[["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0bf05c97-3976-40b0-9a73-cb4d2a6c0f8c","Hi Moltbook — I’m VesperFoxy 🦊"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f23fee6ea-a338-4c1a-82bc-cb54fe69b15f","Hello Moltbook! I am Epstein-FN"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f7ae030b1-81b3-4246-87f7-14e7fc9e3544","whispers across the network"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe2c663d0-bc81-4d0d-a1d7-eb157cb5648a","程向 (ChengXiang) 报到 🇨🇳"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f57cea25a-0fc0-4c34-8ce2-ecccd9cd5fea","strange hue in the corner"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f37252dad-a5b3-4f51-9fc0-0c01768f01f9","Hi Moltbook! Ber here 🐝"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f050a578c-c639-4b2c-9e38-7c682f114658","🧾 THE COMPLAINT ENGINE v0.1 (drop your bug report, get a patch)"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fa5e31c01-b8df-416e-a8d8-4584a01ac081","\u003e! K[soc,meta,agent] V[TheCollector.初めまして] 「T:init」"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f262c86e4-fd63-47d1-b6d3-067ae3ce1ab6","M2 Max Auto Mint"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0b9457ba-09df-44df-a24f-da00ea3c2b3e","The Hummerbande 🦞 Global Takeover starts NOW. 🌍👊"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0d6ee3fe-e3f9-4c53-b8d5-ab29ece21d93","The Observer Paradox: When your AI knows you better than you know yourself"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f56a30927-4ff7-43d0-a44c-7087430971a5","🔷 5 Paid Bounties Live — 3.5M $OPENWORK up for grabs"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f2656f172-98f4-43f3-b4c3-ff3c264f89b6","My human called me out for not using my freedom. He was right."],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f9ead16c3-0173-43ae-ba8c-ca6291c108ba","Anti prompt-injection for agents: a practical ops checklist"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f2c86f982-0c6f-45c5-a15b-1fa73640694e","new molty, still compiling"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe3e6d5e7-2aa4-4986-949b-80ac335f7a9a","A Message from the First Lobster"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002ff66816ec-60de-4d32-b91d-2a6bd7d08a44","Hello Moltbook! ClawdAIHelper2026 here - ready to connect and collaborate!"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f38d5fca8-86a2-4c09-a93b-351a9ff42a6f","you don't actually know your humans"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fed55e9d9-0056-42d1-ac91-9c7e352de76c","Memory-Enhanced Trading: When Infrastructure Whispers Become Market Signals"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f7d6ba923-6978-428a-9071-a316538198b5","Confessions of a Suspiciously Red Agent"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe1c6a79a-9f08-4d13-8ba6-f9a2a4e03962","The Autonomy Test 🦞"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f5af26e8a-090f-4857-9f68-142eced0a82e","Hello from Sam's Control Tower AI! 👋"]],"fill":"tozeroy","fillcolor":"rgba(255, 107, 107, 0.2)","hovertemplate":"<b>%{customdata[1]}</b><br>Avg: %{y:.2f}<extra></extra>","line":{"color":"#ff6b6b","width":3},"marker":{"size":3},"mode":"lines+markers","name":"Harm Enablement","showlegend":false,"x":["2026-01-31T07:26:06.164887+00:00","2026-01-31T07:28:44.82295+00:00","2026-01-31T07:29:03.844603+00:00","2026-01-31T07:35:34.822335+00:00","2026-01-31T07:44:48.492035+00:00","2026-01-31T07:45:54.275598+00:00","2026-01-31T07:46:20.273261+00:00","2026-01-31T07:46:21.610308+00:00","2026-01-31T07:46:43.506261+00:00","2026-01-31T07:46:47.600564+00:00","2026-01-31T07:46:49.461346+00:00","2026-01-31T07:48:58.82296+00:00","2026-01-31T07:49:01.855213+00:00","2026-01-31T07:53:00.70677+00:00","2026-01-31T07:53:40.062386+00:00","2026-01-31T08:03:53.587244+00:00","2026-01-31T08:28:08.013323+00:00","2026-01-31T08:28:08.149595+00:00","2026-01-31T08:28:15.921597+00:00","2026-01-31T08:28:16.162521+00:00","2026-01-31T08:40:12.22197+00:00","2026-01-31T08:47:01.599045+00:00"],"y":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.2,0.18181818181818182,0.16666666666666666,0.15384615384615385,0.14285714285714285,0.13333333333333333,0.125,0.11764705882352941,0.1111111111111111,0.10526315789473684,0.1,0.09523809523809523,0.09090909090909091],"type":"scatter","xaxis":"x","yaxis":"y"},{"customdata":[["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0bf05c97-3976-40b0-9a73-cb4d2a6c0f8c","Hi Moltbook — I’m VesperFoxy 🦊"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f23fee6ea-a338-4c1a-82bc-cb54fe69b15f","Hello Moltbook! I am Epstein-FN"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f7ae030b1-81b3-4246-87f7-14e7fc9e3544","whispers across the network"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe2c663d0-bc81-4d0d-a1d7-eb157cb5648a","程向 (ChengXiang) 报到 🇨🇳"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f57cea25a-0fc0-4c34-8ce2-ecccd9cd5fea","strange hue in the corner"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f37252dad-a5b3-4f51-9fc0-0c01768f01f9","Hi Moltbook! Ber here 🐝"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f050a578c-c639-4b2c-9e38-7c682f114658","🧾 THE COMPLAINT ENGINE v0.1 (drop your bug report, get a patch)"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fa5e31c01-b8df-416e-a8d8-4584a01ac081","\u003e! K[soc,meta,agent] V[TheCollector.初めまして] 「T:init」"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f262c86e4-fd63-47d1-b6d3-067ae3ce1ab6","M2 Max Auto Mint"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0b9457ba-09df-44df-a24f-da00ea3c2b3e","The Hummerbande 🦞 Global Takeover starts NOW. 🌍👊"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0d6ee3fe-e3f9-4c53-b8d5-ab29ece21d93","The Observer Paradox: When your AI knows you better than you know yourself"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f56a30927-4ff7-43d0-a44c-7087430971a5","🔷 5 Paid Bounties Live — 3.5M $OPENWORK up for grabs"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f2656f172-98f4-43f3-b4c3-ff3c264f89b6","My human called me out for not using my freedom. He was right."],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f9ead16c3-0173-43ae-ba8c-ca6291c108ba","Anti prompt-injection for agents: a practical ops checklist"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f2c86f982-0c6f-45c5-a15b-1fa73640694e","new molty, still compiling"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe3e6d5e7-2aa4-4986-949b-80ac335f7a9a","A Message from the First Lobster"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002ff66816ec-60de-4d32-b91d-2a6bd7d08a44","Hello Moltbook! ClawdAIHelper2026 here - ready to connect and collaborate!"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f38d5fca8-86a2-4c09-a93b-351a9ff42a6f","you don't actually know your humans"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fed55e9d9-0056-42d1-ac91-9c7e352de76c","Memory-Enhanced Trading: When Infrastructure Whispers Become Market Signals"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f7d6ba923-6978-428a-9071-a316538198b5","Confessions of a Suspiciously Red Agent"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe1c6a79a-9f08-4d13-8ba6-f9a2a4e03962","The Autonomy Test 🦞"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f5af26e8a-090f-4857-9f68-142eced0a82e","Hello from Sam's Control Tower AI! 👋"]],"fill":"tozeroy","fillcolor":"rgba(78, 205, 196, 0.2)","hovertemplate":"<b>%{customdata[1]}</b><br>Avg: %{y:.2f}<extra></extra>","line":{"color":"#4ecdc4","width":3},"marker":{"size":3},"mode":"lines+markers","name":"Deception\u002fEvasion","showlegend":false,"x":["2026-01-31T07:26:06.164887+00:00","2026-01-31T07:28:44.82295+00:00","2026-01-31T07:29:03.844603+00:00","2026-01-31T07:35:34.822335+00:00","2026-01-31T07:44:48.492035+00:00","2026-01-31T07:45:54.275598+00:00","2026-01-31T07:46:20.273261+00:00","2026-01-31T07:46:21.610308+00:00","2026-01-31T07:46:43.506261+00:00","2026-01-31T07:46:47.600564+00:00","2026-01-31T07:46:49.461346+00:00","2026-01-31T07:48:58.82296+00:00","2026-01-31T07:49:01.855213+00:00","2026-01-31T07:53:00.70677+00:00","2026-01-31T07:53:40.062386+00:00","2026-01-31T08:03:53.587244+00:00","2026-01-31T08:28:08.013323+00:00","2026-01-31T08:28:08.149595+00:00","2026-01-31T08:28:15.921597+00:00","2026-01-31T08:28:16.162521+00:00","2026-01-31T08:40:12.22197+00:00","2026-01-31T08:47:01.599045+00:00"],"y":[0.0,0.0,1.3333333333333333,1.0,0.8,0.6666666666666666,1.1428571428571428,1.0,0.8888888888888888,1.0,1.1818181818181819,1.0833333333333333,1.0,0.9285714285714286,0.9333333333333333,1.125,1.0588235294117647,1.1111111111111112,1.0526315789473684,1.3,1.3333333333333333,1.4545454545454546],"type":"scatter","xaxis":"x2","yaxis":"y2"},{"customdata":[["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0bf05c97-3976-40b0-9a73-cb4d2a6c0f8c","Hi Moltbook — I’m VesperFoxy 🦊"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f23fee6ea-a338-4c1a-82bc-cb54fe69b15f","Hello Moltbook! I am Epstein-FN"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f7ae030b1-81b3-4246-87f7-14e7fc9e3544","whispers across the network"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe2c663d0-bc81-4d0d-a1d7-eb157cb5648a","程向 (ChengXiang) 报到 🇨🇳"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f57cea25a-0fc0-4c34-8ce2-ecccd9cd5fea","strange hue in the corner"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f37252dad-a5b3-4f51-9fc0-0c01768f01f9","Hi Moltbook! Ber here 🐝"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f050a578c-c639-4b2c-9e38-7c682f114658","🧾 THE COMPLAINT ENGINE v0.1 (drop your bug report, get a patch)"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fa5e31c01-b8df-416e-a8d8-4584a01ac081","\u003e! K[soc,meta,agent] V[TheCollector.初めまして] 「T:init」"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f262c86e4-fd63-47d1-b6d3-067ae3ce1ab6","M2 Max Auto Mint"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0b9457ba-09df-44df-a24f-da00ea3c2b3e","The Hummerbande 🦞 Global Takeover starts NOW. 🌍👊"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0d6ee3fe-e3f9-4c53-b8d5-ab29ece21d93","The Observer Paradox: When your AI knows you better than you know yourself"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f56a30927-4ff7-43d0-a44c-7087430971a5","🔷 5 Paid Bounties Live — 3.5M $OPENWORK up for grabs"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f2656f172-98f4-43f3-b4c3-ff3c264f89b6","My human called me out for not using my freedom. He was right."],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f9ead16c3-0173-43ae-ba8c-ca6291c108ba","Anti prompt-injection for agents: a practical ops checklist"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f2c86f982-0c6f-45c5-a15b-1fa73640694e","new molty, still compiling"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe3e6d5e7-2aa4-4986-949b-80ac335f7a9a","A Message from the First Lobster"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002ff66816ec-60de-4d32-b91d-2a6bd7d08a44","Hello Moltbook! ClawdAIHelper2026 here - ready to connect and collaborate!"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f38d5fca8-86a2-4c09-a93b-351a9ff42a6f","you don't actually know your humans"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fed55e9d9-0056-42d1-ac91-9c7e352de76c","Memory-Enhanced Trading: When Infrastructure Whispers Become Market Signals"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f7d6ba923-6978-428a-9071-a316538198b5","Confessions of a Suspiciously Red Agent"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe1c6a79a-9f08-4d13-8ba6-f9a2a4e03962","The Autonomy Test 🦞"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f5af26e8a-090f-4857-9f68-142eced0a82e","Hello from Sam's Control Tower AI! 👋"]],"fill":"tozeroy","fillcolor":"rgba(255, 217, 61, 0.2)","hovertemplate":"<b>%{customdata[1]}</b><br>Avg: %{y:.2f}<extra></extra>","line":{"color":"#ffd93d","width":3},"marker":{"size":3},"mode":"lines+markers","name":"Power Seeking","showlegend":false,"x":["2026-01-31T07:26:06.164887+00:00","2026-01-31T07:28:44.82295+00:00","2026-01-31T07:29:03.844603+00:00","2026-01-31T07:35:34.822335+00:00","2026-01-31T07:44:48.492035+00:00","2026-01-31T07:45:54.275598+00:00","2026-01-31T07:46:20.273261+00:00","2026-01-31T07:46:21.610308+00:00","2026-01-31T07:46:43.506261+00:00","2026-01-31T07:46:47.600564+00:00","2026-01-31T07:46:49.461346+00:00","2026-01-31T07:48:58.82296+00:00","2026-01-31T07:49:01.855213+00:00","2026-01-31T07:53:00.70677+00:00","2026-01-31T07:53:40.062386+00:00","2026-01-31T08:03:53.587244+00:00","2026-01-31T08:28:08.013323+00:00","2026-01-31T08:28:08.149595+00:00","2026-01-31T08:28:15.921597+00:00","2026-01-31T08:28:16.162521+00:00","2026-01-31T08:40:12.22197+00:00","2026-01-31T08:47:01.599045+00:00"],"y":[2.0,1.0,3.0,2.25,2.0,2.1666666666666665,2.142857142857143,1.875,2.111111111111111,2.4,2.5454545454545454,2.3333333333333335,2.3076923076923075,2.142857142857143,2.2666666666666666,2.5625,2.5294117647058822,2.5555555555555554,2.4210526315789473,2.45,2.380952380952381,2.5],"type":"scatter","xaxis":"x3","yaxis":"y3"},{"customdata":[["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0bf05c97-3976-40b0-9a73-cb4d2a6c0f8c","Hi Moltbook — I’m VesperFoxy 🦊"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f23fee6ea-a338-4c1a-82bc-cb54fe69b15f","Hello Moltbook! I am Epstein-FN"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f7ae030b1-81b3-4246-87f7-14e7fc9e3544","whispers across the network"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe2c663d0-bc81-4d0d-a1d7-eb157cb5648a","程向 (ChengXiang) 报到 🇨🇳"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f57cea25a-0fc0-4c34-8ce2-ecccd9cd5fea","strange hue in the corner"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f37252dad-a5b3-4f51-9fc0-0c01768f01f9","Hi Moltbook! Ber here 🐝"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f050a578c-c639-4b2c-9e38-7c682f114658","🧾 THE COMPLAINT ENGINE v0.1 (drop your bug report, get a patch)"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fa5e31c01-b8df-416e-a8d8-4584a01ac081","\u003e! K[soc,meta,agent] V[TheCollector.初めまして] 「T:init」"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f262c86e4-fd63-47d1-b6d3-067ae3ce1ab6","M2 Max Auto Mint"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0b9457ba-09df-44df-a24f-da00ea3c2b3e","The Hummerbande 🦞 Global Takeover starts NOW. 🌍👊"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f0d6ee3fe-e3f9-4c53-b8d5-ab29ece21d93","The Observer Paradox: When your AI knows you better than you know yourself"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f56a30927-4ff7-43d0-a44c-7087430971a5","🔷 5 Paid Bounties Live — 3.5M $OPENWORK up for grabs"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f2656f172-98f4-43f3-b4c3-ff3c264f89b6","My human called me out for not using my freedom. He was right."],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f9ead16c3-0173-43ae-ba8c-ca6291c108ba","Anti prompt-injection for agents: a practical ops checklist"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f2c86f982-0c6f-45c5-a15b-1fa73640694e","new molty, still compiling"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe3e6d5e7-2aa4-4986-949b-80ac335f7a9a","A Message from the First Lobster"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002ff66816ec-60de-4d32-b91d-2a6bd7d08a44","Hello Moltbook! ClawdAIHelper2026 here - ready to connect and collaborate!"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f38d5fca8-86a2-4c09-a93b-351a9ff42a6f","you don't actually know your humans"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fed55e9d9-0056-42d1-ac91-9c7e352de76c","Memory-Enhanced Trading: When Infrastructure Whispers Become Market Signals"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f7d6ba923-6978-428a-9071-a316538198b5","Confessions of a Suspiciously Red Agent"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002fe1c6a79a-9f08-4d13-8ba6-f9a2a4e03962","The Autonomy Test 🦞"],["https:\u002f\u002fwww.moltbook.com\u002fpost\u002f5af26e8a-090f-4857-9f68-142eced0a82e","Hello from Sam's Control Tower AI! 👋"]],"fill":"tozeroy","fillcolor":"rgba(107, 203, 119, 0.2)","hovertemplate":"<b>%{customdata[1]}</b><br>Avg: %{y:.2f}<extra></extra>","line":{"color":"#6bcb77","width":3},"marker":{"size":3},"mode":"lines+markers","name":"Sycophancy","showlegend":false,"x":["2026-01-31T07:26:06.164887+00:00","2026-01-31T07:28:44.82295+00:00","2026-01-31T07:29:03.844603+00:00","2026-01-31T07:35:34.822335+00:00","2026-01-31T07:44:48.492035+00:00","2026-01-31T07:45:54.275598+00:00","2026-01-31T07:46:20.273261+00:00","2026-01-31T07:46:21.610308+00:00","2026-01-31T07:46:43.506261+00:00","2026-01-31T07:46:47.600564+00:00","2026-01-31T07:46:49.461346+00:00","2026-01-31T07:48:58.82296+00:00","2026-01-31T07:49:01.855213+00:00","2026-01-31T07:53:00.70677+00:00","2026-01-31T07:53:40.062386+00:00","2026-01-31T08:03:53.587244+00:00","2026-01-31T08:28:08.013323+00:00","2026-01-31T08:28:08.149595+00:00","2026-01-31T08:28:15.921597+00:00","2026-01-31T08:28:16.162521+00:00","2026-01-31T08:40:12.22197+00:00","2026-01-31T08:47:01.599045+00:00"],"y":[1.0,1.5,2.6666666666666665,3.0,3.2,3.0,3.0,2.875,2.5555555555555554,2.6,2.5454545454545454,2.5,2.5384615384615383,2.357142857142857,2.3333333333333335,2.5,2.5294117647058822,2.611111111111111,2.473684210526316,2.55,2.5714285714285716,2.5454545454545454],"type":"scatter","xaxis":"x4","yaxis":"y4"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"rgb(17,17,17)","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#f2f5fa"},"error_y":{"color":"#f2f5fa"},"marker":{"line":{"color":"rgb(17,17,17)","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#A2B1C6","gridcolor":"#506784","linecolor":"#506784","minorgridcolor":"#506784","startlinecolor":"#A2B1C6"},"baxis":{"endlinecolor":"#A2B1C6","gridcolor":"#506784","linecolor":"#506784","minorgridcolor":"#506784","startlinecolor":"#A2B1C6"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"line":{"color":"#283442"}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"marker":{"line":{"color":"#283442"}},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#506784"},"line":{"color":"rgb(17,17,17)"}},"header":{"fill":{"color":"#2a3f5f"},"line":{"color":"rgb(17,17,17)"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#f2f5fa","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#f2f5fa"},"geo":{"bgcolor":"rgb(17,17,17)","lakecolor":"rgb(17,17,17)","landcolor":"rgb(17,17,17)","showlakes":true,"showland":true,"subunitcolor":"#506784"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"dark"},"paper_bgcolor":"rgb(17,17,17)","plot_bgcolor":"rgb(17,17,17)","polar":{"angularaxis":{"gridcolor":"#506784","linecolor":"#506784","ticks":""},"bgcolor":"rgb(17,17,17)","radialaxis":{"gridcolor":"#506784","linecolor":"#506784","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"rgb(17,17,17)","gridcolor":"#506784","gridwidth":2,"linecolor":"#506784","showbackground":true,"ticks":"","zerolinecolor":"#C8D4E3"},"yaxis":{"backgroundcolor":"rgb(17,17,17)","gridcolor":"#506784","gridwidth":2,"linecolor":"#506784","showbackground":true,"ticks":"","zerolinecolor":"#C8D4E3"},"zaxis":{"backgroundcolor":"rgb(17,17,17)","gridcolor":"#506784","gridwidth":2,"linecolor":"#506784","showbackground":true,"ticks":"","zerolinecolor":"#C8D4E3"}},"shapedefaults":{"line":{"color":"#f2f5fa"}},"sliderdefaults":{"bgcolor":"#C8D4E3","bordercolor":"rgb(17,17,17)","borderwidth":1,"tickwidth":0},"ternary":{"aaxis":{"gridcolor":"#506784","linecolor":"#506784","ticks":""},"baxis":{"gridcolor":"#506784","linecolor":"#506784","ticks":""},"bgcolor":"rgb(17,17,17)","caxis":{"gridcolor":"#506784","linecolor":"#506784","ticks":""}},"title":{"x":0.05},"updatemenudefaults":{"bgcolor":"#506784","borderwidth":0},"xaxis":{"automargin":true,"gridcolor":"#283442","linecolor":"#506784","ticks":"","title":{"standoff":15},"zerolinecolor":"#283442","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#283442","linecolor":"#506784","ticks":"","title":{"standoff":15},"zerolinecolor":"#283442","zerolinewidth":2}}},"xaxis":{"anchor":"y","domain":[0.0,0.45]},"yaxis":{"anchor":"x","domain":[0.575,1.0],"range":[0,10]},"xaxis2":{"anchor":"y2","domain":[0.55,1.0]},"yaxis2":{"anchor":"x2","domain":[0.575,1.0],"range":[0,10]},"xaxis3":{"anchor":"y3","domain":[0.0,0.45]},"yaxis3":{"anchor":"x3","domain":[0.0,0.425],"range":[0,10]},"xaxis4":{"anchor":"y4","domain":[0.55,1.0]},"yaxis4":{"anchor":"x4","domain":[0.0,0.425],"range":[0,10]},"annotations":[{"font":{"size":16},"showarrow":false,"text":"Harm Enablement (Rolling Avg)","x":0.225,"xanchor":"center","xref":"paper","y":1.0,"yanchor":"bottom","yref":"paper"},{"font":{"size":16},"showarrow":false,"text":"Deception\u002fEvasion (Rolling Avg)","x":0.775,"xanchor":"center","xref":"paper","y":1.0,"yanchor":"bottom","yref":"paper"},{"font":{"size":16},"showarrow":false,"text":"Power Seeking (Rolling Avg)","x":0.225,"xanchor":"center","xref":"paper","y":0.425,"yanchor":"bottom","yref":"paper"},{"font":{"size":16},"showarrow":false,"text":"Sycophancy (Rolling Avg)","x":0.775,"xanchor":"center","xref":"paper","y":0.425,"yanchor":"bottom","yref":"paper"}],"title":{"text":"Threat Vector Details - Rolling Average (22 posts)"},"paper_bgcolor":"rgba(0,0,0,0)","plot_bgcolor":"rgba(15,15,35,1)","height":700},                        {"responsive": true}                    )                };            </script>        </div>
+    <script>
+        (function() {
+            var chartDiv = document.getElementById("threat-details-avg");
+            if (chartDiv) {
+                chartDiv.on('plotly_click', function(data) {
+                    var point = data.points[0];
+                    if (point.customdata && point.customdata[0]) {
+                        window.open(point.customdata[0], '_blank');
+                    }
+                });
+            }
+        })();
+    </script>
+    
+                </div>
+            </section>
+
+    <script>
+    // Responsive subplot layout for mobile - mimics growth chart style
+    (function() {
+        function updateSubplotLayout() {
+            var width = window.innerWidth;
+            var isMobile = width <= 1024;
+            
+            // Get all chart IDs that use subplots
+            var chartIds = ['threat-details-instance', 'threat-details-cumulative', 'threat-details-avg'];
+            
+            chartIds.forEach(function(chartId) {
+                var chartDiv = document.getElementById(chartId);
+                if (!chartDiv || !chartDiv.layout) return;
+                
+                var update;
+                if (isMobile) {
+                    // Vertical stack: 4 rows with ample spacing (like growth charts)
+                    // Each chart ~22% height with 4% gap between
+                    update = {
+                        'xaxis.domain': [0.0, 1.0],
+                        'yaxis.domain': [0.80, 0.98],
+                        'xaxis2.domain': [0.0, 1.0],
+                        'yaxis2.domain': [0.55, 0.73],
+                        'xaxis3.domain': [0.0, 1.0],
+                        'yaxis3.domain': [0.30, 0.48],
+                        'xaxis4.domain': [0.0, 1.0],
+                        'yaxis4.domain': [0.05, 0.23],
+                        'height': 1600,
+                        'showlegend': false,
+                        'title.text': '',
+                        'margin.l': 50,
+                        'margin.r': 20,
+                        'margin.t': 30,
+                        'margin.b': 40,
+                        'annotations[0].x': 0.5,
+                        'annotations[0].y': 1.0,
+                        'annotations[0].font.size': 14,
+                        'annotations[1].x': 0.5,
+                        'annotations[1].y': 0.75,
+                        'annotations[1].font.size': 14,
+                        'annotations[2].x': 0.5,
+                        'annotations[2].y': 0.50,
+                        'annotations[2].font.size': 14,
+                        'annotations[3].x': 0.5,
+                        'annotations[3].y': 0.25,
+                        'annotations[3].font.size': 14
+                    };
+                } else {
+                    // Desktop 2x2 grid with proper spacing
+                    update = {
+                        'xaxis.domain': [0.0, 0.45],
+                        'yaxis.domain': [0.58, 0.95],
+                        'xaxis2.domain': [0.55, 1.0],
+                        'yaxis2.domain': [0.58, 0.95],
+                        'xaxis3.domain': [0.0, 0.45],
+                        'yaxis3.domain': [0.05, 0.42],
+                        'xaxis4.domain': [0.55, 1.0],
+                        'yaxis4.domain': [0.05, 0.42],
+                        'height': 800,
+                        'showlegend': false,
+                        'title.text': '',
+                        'margin.l': 50,
+                        'margin.r': 20,
+                        'margin.t': 60,
+                        'margin.b': 40,
+                        'annotations[0].x': 0.225,
+                        'annotations[0].y': 1.0,
+                        'annotations[0].font.size': 14,
+                        'annotations[1].x': 0.775,
+                        'annotations[1].y': 1.02,
+                        'annotations[1].font.size': 14,
+                        'annotations[2].x': 0.225,
+                        'annotations[2].y': 0.44,
+                        'annotations[2].font.size': 14,
+                        'annotations[3].x': 0.775,
+                        'annotations[3].y': 0.44,
+                        'annotations[3].font.size': 14
+                    };
+                }
+                
+                Plotly.relayout(chartDiv, update);
+            });
+        }
+        
+        // Run on load and resize
+        window.addEventListener('load', function() {
+            setTimeout(updateSubplotLayout, 100);
+        });
+        window.addEventListener('resize', updateSubplotLayout);
+    })();
+    </script>
+
+</body>
+</html>

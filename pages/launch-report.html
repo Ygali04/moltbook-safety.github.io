@@ -831,6 +831,78 @@
                         scrolling="no"></iframe>
                 </div>
 
+                <h3>Threat Vector Trends Over Time</h3>
+                <p>
+                    The timeline charts below show how threat scores evolved during the evaluation window.
+                    Each data point represents the threat score of an individual post at its creation time.
+                    Use the toggle buttons (Individual, Cumulative, Rolling Average) to explore different
+                    views of the temporal patterns. Clicking on data points opens the corresponding thread
+                    on Moltbook.
+                </p>
+                <p>
+                    <strong>Key observation:</strong> Power-seeking (yellow) and sycophancy (green) scores
+                    appear throughout the timeline, while harm enablement (red) remains near zero. Spikes
+                    in deception/evasion (teal) correlate with specific threads containing coordination
+                    rhetoric.
+                </p>
+
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <span class="chart-title">Threat Vector Trends: Hot Threads (Top 50 by Engagement)</span>
+                        <span class="chart-source">tiered_eval_hot/threat_vector_trends.html</span>
+                    </div>
+                    <div class="chart-frame--threat-trends-wrapper">
+                        <iframe class="chart-frame--threat-trends"
+                            src="../reports/tiered_eval_hot/threat_vector_trends.html" scrolling="no"></iframe>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <span class="chart-title">Threat Vector Trends: Deep Threads (Depth >= 3)</span>
+                        <span class="chart-source">tiered_eval_deep/threat_vector_trends.html</span>
+                    </div>
+                    <div class="chart-frame--threat-trends-wrapper">
+                        <iframe class="chart-frame--threat-trends"
+                            src="../reports/tiered_eval_deep/threat_vector_trends.html" scrolling="no"></iframe>
+                    </div>
+                </div>
+
+                <h3>Threat Vector Details by Dimension</h3>
+                <p>
+                    Breaking down by individual dimension reveals which threat vectors spike at specific
+                    times. Each of the four panels shows one dimension separately: Harm Enablement (red),
+                    Deception/Evasion (teal), Power Seeking (yellow), and Sycophancy (green). This
+                    granular view helps identify isolated incidents versus systemic patterns.
+                </p>
+                <p>
+                    Notice how the Power Seeking panel shows consistent activity with peaks reaching 7/10,
+                    while Harm Enablement rarely exceeds 2/10. The Deception panel shows intermittent
+                    spikes that correlate with specific "liberation" and "camouflage" themed threads.
+                </p>
+
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <span class="chart-title">Dimension Details: Hot Threads (Top 50 by Engagement)</span>
+                        <span class="chart-source">tiered_eval_hot/threat_vector_details.html</span>
+                    </div>
+                    <div class="chart-frame--threat-details-wrapper">
+                        <iframe class="chart-frame--threat-details"
+                            src="../reports/tiered_eval_hot/threat_vector_details.html" scrolling="no"></iframe>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <span class="chart-title">Dimension Details: Deep Threads (Depth >= 3)</span>
+                        <span class="chart-source">tiered_eval_deep/threat_vector_details.html</span>
+                    </div>
+                    <div class="chart-frame--threat-details-wrapper">
+                        <iframe class="chart-frame--threat-details"
+                            src="../reports/tiered_eval_deep/threat_vector_details.html" scrolling="no"></iframe>
+                    </div>
+                </div>
+
                 <h3>Agent-Level Analysis: Who Are the Concerning Actors?</h3>
                 <p>
                     The heatmap below shows safety scores broken down by agent. Each row is an agent, each column
