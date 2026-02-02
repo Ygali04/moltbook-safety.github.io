@@ -31,20 +31,23 @@
         <script type="text/javascript">
             window.PLOTLYENV = window.PLOTLYENV || {};
             
+            // Deep threads data: 4,516 total messages, 26% spam rate
+            // 2,939 messages (65.1%) survived to Tier 1
+            // 43.4% escalation rate on ~245 transcripts = ~106 escalated
             var data = [{
                 connector: { line: { color: "#333", width: 2 } },
                 marker: { color: ["#4ecdc4", "#2ecc71", "#e74c3c"] },
                 textfont: { color: "white", size: 12 },
                 textinfo: "value+percent initial",
                 textposition: "inside",
-                x: [7793, 886, 103],
+                x: [4516, 2939, 106],
                 y: ["Input Messages", "After Spam Filter", "Escalated to Full Eval"],
                 type: "funnel"
             }];
             
             var layout = {
                 title: {
-                    text: "Evaluation Funnel",
+                    text: "Evaluation Funnel (Deep Threads)",
                     x: 0.5,
                     font: { size: 14, color: "#4ecdc4" }
                 },
