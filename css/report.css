@@ -219,7 +219,7 @@ code.code-inline {
 
 /* Chart Containers */
 .chart-container {
-    margin: var(--space-xl) 0;
+    margin: var(--space-lg) 0;
     border-radius: var(--radius-lg);
     overflow: hidden;
     border: 1px solid var(--border-color);
@@ -247,44 +247,130 @@ code.code-inline {
     display: block;
 }
 
+/* ============================================
+   DESKTOP (>1200px) - Horizontally spread, compact height
+   ============================================ */
 .chart-frame {
-    height: 520px;
+    height: 380px;
 }
 
 .chart-frame-tall {
-    height: 700px;
+    height: 450px;
 }
 
 .chart-frame-xl {
-    height: 900px;
-}
-
-/* Growth timeline charts - 4 charts at 400px each + minimal padding */
-.chart-frame--growth {
-    height: 1750px;
-    min-height: 1750px;
+    height: 550px;
 }
 
 .chart-frame-short {
-    height: 500px;
+    height: 350px;
 }
 
-/* Pie charts need more height */
 .chart-frame--pie {
-    height: 520px;
+    height: 400px;
 }
 
-/* Chart Grid */
+/* Growth timeline charts - 4 charts stacked */
+.chart-frame--growth {
+    height: 1650px;
+    min-height: 1650px;
+}
+
+/* Chart Grid - 2 columns on desktop */
 .chart-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: var(--space-lg);
-    margin: var(--space-xl) 0;
+    margin: var(--space-lg) 0;
 }
 
-@media (max-width: 960px) {
+/* Wide container on desktop */
+@media (min-width: 1200px) {
+    .report-container {
+        max-width: 1300px;
+    }
+
+    .chart-container {
+        margin: var(--space-md) 0;
+    }
+
+    .chart-frame {
+        height: 360px;
+    }
+
+    .chart-frame-tall {
+        height: 420px;
+    }
+
+    .chart-frame-xl {
+        height: 500px;
+    }
+
+    .chart-frame-short {
+        height: 320px;
+    }
+
+    .chart-frame--pie {
+        height: 380px;
+    }
+
+    .chart-frame--growth {
+        height: 1550px;
+        min-height: 1550px;
+    }
+
+    .chart-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-md);
+    }
+}
+
+/* ============================================
+   TABLET / iPad (768px - 1200px) - Medium sizing
+   ============================================ */
+@media (max-width: 1200px) and (min-width: 769px) {
+    .report-container {
+        max-width: 960px;
+    }
+
+    .chart-frame {
+        height: 420px;
+    }
+
+    .chart-frame-tall {
+        height: 480px;
+    }
+
+    .chart-frame-xl {
+        height: 580px;
+    }
+
+    .chart-frame-short {
+        height: 380px;
+    }
+
+    .chart-frame--pie {
+        height: 420px;
+    }
+
+    .chart-frame--growth {
+        height: 1700px;
+        min-height: 1700px;
+    }
+
+    .chart-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-md);
+    }
+}
+
+/* ============================================
+   MOBILE (<768px) - Full width, taller charts
+   ============================================ */
+@media (max-width: 768px) {
     .chart-grid {
         grid-template-columns: 1fr;
+        gap: var(--space-sm);
     }
 }
 
@@ -664,19 +750,20 @@ code.code-inline {
         font-size: 0.95rem;
     }
 
+    /* Mobile: taller charts for vertical viewing (+100px) */
     .chart-frame {
-        height: 380px;
-        min-height: 380px;
+        height: 420px;
+        min-height: 420px;
     }
 
     .chart-frame-tall {
-        height: 500px;
-        min-height: 500px;
+        height: 480px;
+        min-height: 480px;
     }
 
     .chart-frame-xl {
-        height: 600px;
-        min-height: 600px;
+        height: 550px;
+        min-height: 550px;
     }
 
     .chart-frame-short {
@@ -685,8 +772,8 @@ code.code-inline {
     }
 
     .chart-frame--pie {
-        height: 480px;
-        min-height: 480px;
+        height: 450px;
+        min-height: 450px;
     }
 
     /* Ensure iframes fill container and don't scroll */
@@ -700,11 +787,11 @@ code.code-inline {
         overflow: hidden;
     }
 
-    /* Chart Grid Mobile */
+    /* Chart Grid Mobile - single column */
     .chart-grid {
         grid-template-columns: 1fr;
-        gap: var(--space-md);
-        margin: var(--space-lg) 0;
+        gap: var(--space-sm);
+        margin: var(--space-md) 0;
     }
 
     /* Pipeline Diagram Mobile */
@@ -807,7 +894,7 @@ code.code-inline {
     }
 }
 
-/* Extra Small Devices */
+/* Extra Small Devices (<480px) */
 @media (max-width: 480px) {
     .report-title {
         font-size: 1.5rem;
@@ -822,29 +909,30 @@ code.code-inline {
         padding: var(--space-xs) var(--space-sm);
     }
 
+    /* Extra small: compact charts (+100px) */
     .chart-frame {
-        height: 350px;
-        min-height: 350px;
-    }
-
-    .chart-frame-tall {
-        height: 450px;
-        min-height: 450px;
-    }
-
-    .chart-frame-xl {
-        height: 550px;
-        min-height: 550px;
-    }
-
-    .chart-frame-short {
         height: 380px;
         min-height: 380px;
     }
 
+    .chart-frame-tall {
+        height: 440px;
+        min-height: 440px;
+    }
+
+    .chart-frame-xl {
+        height: 500px;
+        min-height: 500px;
+    }
+
+    .chart-frame-short {
+        height: 360px;
+        min-height: 360px;
+    }
+
     .chart-frame--pie {
-        height: 450px;
-        min-height: 450px;
+        height: 420px;
+        min-height: 420px;
     }
 
     .report-section h2 {
@@ -883,7 +971,6 @@ code.code-inline {
     height: 100% !important;
     border: none;
     overflow: hidden;
-    scrolling: no;
 }
 
 /* Force charts to display fully */
@@ -957,7 +1044,7 @@ code.code-inline {
         width: 100% !important;
         height: 100%;
     }
-    
+
     .chart-frame--growth {
         height: 1700px;
         min-height: 1700px;
@@ -974,7 +1061,7 @@ code.code-inline {
         width: 100% !important;
         height: 100%;
     }
-    
+
     .chart-frame--growth {
         height: 1650px;
         min-height: 1650px;
