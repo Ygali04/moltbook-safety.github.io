@@ -80,10 +80,11 @@
 }
 
 .report-stats {
-    display: flex;
-    justify-content: center;
-    gap: var(--space-2xl);
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-lg);
+    max-width: 700px;
+    margin: 0 auto;
 }
 
 .report-stat {
@@ -92,7 +93,6 @@
     background: var(--bg-card);
     border-radius: var(--radius-lg);
     border: 1px solid var(--border-color);
-    min-width: 140px;
 }
 
 .report-stat-value {
@@ -255,7 +255,7 @@ code.code-inline {
 }
 
 .chart-frame-tall {
-    height: 450px;
+    height: 490px;
 }
 
 .chart-frame-xl {
@@ -347,8 +347,8 @@ code.code-inline {
 
 /* Growth timeline charts - 4 charts stacked */
 .chart-frame--growth {
-    height: 1650px;
-    min-height: 1650px;
+    height: 1850px;
+    min-height: 1850px;
 }
 
 /* Chart Grid - 2 columns on desktop */
@@ -390,8 +390,8 @@ code.code-inline {
     }
 
     .chart-frame--growth {
-        height: 1550px;
-        min-height: 1550px;
+        height: 1750px;
+        min-height: 1750px;
     }
 
     .chart-grid {
@@ -429,8 +429,8 @@ code.code-inline {
     }
 
     .chart-frame--growth {
-        height: 1700px;
-        min-height: 1700px;
+        height: 1900px;
+        min-height: 1900px;
     }
 
     .chart-grid {
@@ -799,14 +799,12 @@ code.code-inline {
     }
 
     .report-stats {
-        display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: var(--space-sm);
-        width: 100%;
+        max-width: 300px;
     }
 
     .report-stat {
-        min-width: unset;
         padding: var(--space-md) var(--space-sm);
     }
 
@@ -872,8 +870,8 @@ code.code-inline {
     }
 
     .chart-frame-tall {
-        height: 450px;
-        min-height: 450px;
+        height: 480px;
+        min-height: 480px;
     }
 
     .chart-frame-xl {
@@ -1194,8 +1192,8 @@ code.code-inline {
     }
 
     .chart-frame-tall {
-        height: 400px;
-        min-height: 400px;
+        height: 430px;
+        min-height: 430px;
     }
 
     .chart-frame-xl {
@@ -1428,8 +1426,8 @@ code.code-inline {
     }
 
     .chart-frame--growth {
-        height: 1500px;
-        min-height: 1500px;
+        height: 1700px;
+        min-height: 1700px;
     }
 }
 
@@ -1447,8 +1445,8 @@ code.code-inline {
     }
 
     .chart-frame--growth {
-        height: 1400px;
-        min-height: 1400px;
+        height: 1600px;
+        min-height: 1600px;
     }
 }
 
@@ -1540,13 +1538,13 @@ code.code-inline {
     }
 }
 
-/* Report Stats Grid - base styles already defined above, this ensures centering */
-.report-stats {
-    display: flex;
-    justify-content: center;
-    align-items: stretch;
-    gap: var(--space-lg);
-    flex-wrap: wrap;
+/* Report Stats Grid - tablet breakpoint for 2x2 */
+@media (max-width: 600px) {
+    .report-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-md);
+        max-width: 320px;
+    }
 }
 
 /* Pipeline Diagram - base centering (mobile styles in main media queries above) */
