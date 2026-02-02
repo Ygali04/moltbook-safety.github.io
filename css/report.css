@@ -300,18 +300,40 @@ code.code-inline {
 
     /* Details: 4 stacked subplots need full height with spacing */
     .chart-frame--threat-details {
-        height: 1800px;
+        height: 1600px;
     }
 }
 
-/* Mobile (480px and below) */
-@media (max-width: 480px) {
+/* Mobile (768px and below) */
+@media (max-width: 768px) {
     .chart-frame--threat-trends {
-        height: 780px;
+        height: 680px;
     }
 
     .chart-frame--threat-details {
-        height: 1680px;
+        height: 1400px;
+    }
+
+    .chart-frame--threat-trends-wrapper,
+    .chart-frame--threat-details-wrapper {
+        margin: 0 calc(-1 * var(--space-md));
+        border-radius: 0;
+    }
+}
+
+/* Small mobile (480px and below) */
+@media (max-width: 480px) {
+    .chart-frame--threat-trends {
+        height: 880px;
+    }
+
+    .chart-frame--threat-details {
+        height: 1780px;
+    }
+
+    .chart-frame--threat-trends-wrapper,
+    .chart-frame--threat-details-wrapper {
+        margin: 0 calc(-1 * var(--space-sm));
     }
 }
 
@@ -743,90 +765,130 @@ code.code-inline {
 /* Responsive - Mobile */
 @media (max-width: 768px) {
     .report-layout {
-        padding-top: 70px;
+        padding-top: 60px;
+    }
+
+    .report-container {
+        padding: 0 var(--space-md);
     }
 
     .report-hero {
-        padding: var(--space-2xl) 0 var(--space-xl);
+        padding: var(--space-xl) 0 var(--space-lg);
     }
 
     .report-meta {
         gap: var(--space-sm);
+        flex-direction: column;
     }
 
     .report-title {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
         margin-bottom: var(--space-md);
+        line-height: 1.25;
+    }
+
+    .report-title br {
+        display: none;
     }
 
     .report-subtitle {
-        font-size: 1rem;
-        margin-bottom: var(--space-xl);
-        padding: 0 var(--space-sm);
+        font-size: 0.95rem;
+        margin-bottom: var(--space-lg);
+        padding: 0;
+        line-height: 1.7;
     }
 
     .report-stats {
-        flex-direction: column;
-        align-items: center;
-        gap: var(--space-md);
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-sm);
+        width: 100%;
     }
 
     .report-stat {
-        width: 100%;
-        max-width: 280px;
-        padding: var(--space-md);
+        min-width: unset;
+        padding: var(--space-md) var(--space-sm);
     }
 
     .report-stat-value {
-        font-size: 1.6rem;
+        font-size: 1.5rem;
     }
 
-    /* Chart Mobile Optimization */
+    .report-stat-label {
+        font-size: 0.7rem;
+        line-height: 1.3;
+    }
+
+    /* Section spacing */
+    .report-section {
+        padding: var(--space-xl) 0;
+    }
+
+    .report-section h2 {
+        font-size: 1.5rem;
+        line-height: 1.3;
+    }
+
+    .report-section h3 {
+        font-size: 1.15rem;
+        margin-top: var(--space-xl);
+    }
+
+    .report-section h4 {
+        font-size: 1rem;
+    }
+
+    .report-section p {
+        font-size: 0.95rem;
+        line-height: 1.75;
+    }
+
+    /* Chart Mobile Optimization - full bleed */
     .chart-container {
-        margin: var(--space-lg) calc(-1 * var(--space-md));
+        margin: var(--space-md) calc(-1 * var(--space-md));
         border-radius: 0;
         border-left: none;
         border-right: none;
     }
 
-    /* chart-header is hidden globally */
-
     /* Mobile bullet points */
     .report-section ul,
     .report-section ol {
-        margin-left: var(--space-md);
-        padding-left: var(--space-sm);
+        margin-left: var(--space-sm);
+        padding-left: var(--space-md);
     }
 
     .report-section li {
         padding-left: var(--space-xs);
-        font-size: 0.95rem;
+        font-size: 0.9rem;
+        line-height: 1.7;
+        margin-bottom: var(--space-xs);
     }
 
-    /* Mobile: taller charts for vertical viewing (+100px) */
+    /* Mobile: optimized chart heights */
     .chart-frame {
-        height: 420px;
-        min-height: 420px;
+        height: 380px;
+        min-height: 380px;
     }
 
     .chart-frame-tall {
-        height: 480px;
-        min-height: 480px;
+        height: 450px;
+        min-height: 450px;
     }
 
     .chart-frame-xl {
-        height: 550px;
-        min-height: 550px;
+        height: 520px;
+        min-height: 520px;
     }
 
     .chart-frame-short {
-        height: 400px;
-        min-height: 400px;
+        height: 360px;
+        min-height: 360px;
     }
 
     .chart-frame--pie {
-        height: 450px;
-        min-height: 450px;
+        height: 380px;
+        min-height: 380px;
     }
 
     /* Ensure iframes fill container and don't scroll */
@@ -847,153 +909,66 @@ code.code-inline {
         margin: var(--space-md) 0;
     }
 
-    /* Pipeline Diagram Mobile */
+    /* Pipeline Diagram Mobile - compact vertical */
     .pipeline-diagram {
         flex-direction: column;
-        padding: var(--space-lg);
-        gap: var(--space-sm);
+        padding: var(--space-md);
+        gap: 0;
+        margin: var(--space-md) calc(-1 * var(--space-md));
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
     }
 
     .pipeline-step {
         width: 100%;
         flex-direction: row;
         justify-content: flex-start;
-        gap: var(--space-md);
-        padding: var(--space-md);
+        gap: var(--space-sm);
+        padding: var(--space-sm) var(--space-md);
         min-width: unset;
         text-align: left;
+        border-radius: 0;
+        border: none;
+        border-bottom: 1px solid var(--border-color);
+        background: transparent;
+    }
+
+    .pipeline-step:last-of-type {
+        border-bottom: none;
     }
 
     .pipeline-step-icon {
-        font-size: 1.3rem;
+        font-size: 1.1rem;
+        min-width: 24px;
+        text-align: center;
     }
 
-    .pipeline-step-info {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
+    .pipeline-step-name {
+        font-size: 0.8rem;
+    }
+
+    .pipeline-step-desc {
+        font-size: 0.7rem;
     }
 
     .pipeline-arrow {
-        transform: rotate(90deg);
-        font-size: 1rem;
+        display: none;
     }
 
     /* Threat Grid Mobile */
     .threat-grid {
         grid-template-columns: 1fr;
         gap: var(--space-sm);
+        margin: var(--space-md) calc(-1 * var(--space-md));
     }
 
     .threat-card {
         padding: var(--space-md);
-    }
-
-    /* Case Study Mobile */
-    .case-study {
-        padding: var(--space-lg);
-        margin: var(--space-lg) calc(-1 * var(--space-md));
         border-radius: 0;
         border-left: none;
         border-right: none;
-    }
-
-    .case-study-header {
-        flex-direction: column;
-        gap: var(--space-sm);
-    }
-
-    .case-study-icon {
-        font-size: 1.5rem;
-    }
-
-    .case-study-title {
-        font-size: 1.1rem;
-    }
-
-    .case-study-stats {
-        flex-direction: column;
-        gap: var(--space-md);
-    }
-
-    /* Insight Box Mobile */
-    .insight-box {
-        padding: var(--space-lg);
-        margin: var(--space-lg) calc(-1 * var(--space-md));
-        border-radius: 0;
-    }
-
-    /* CTA Section Mobile */
-    .report-cta {
-        padding: var(--space-2xl) var(--space-md);
-    }
-
-    .cta-title {
-        font-size: 1.5rem;
-    }
-
-    .cta-text {
-        font-size: 1rem;
-    }
-
-    .cta-buttons {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .cta-buttons .btn {
-        width: 100%;
-        max-width: 280px;
-    }
-}
-
-/* Extra Small Devices (<480px) */
-@media (max-width: 480px) {
-    .report-title {
-        font-size: 1.5rem;
-    }
-
-    .report-subtitle {
-        font-size: 0.95rem;
-    }
-
-    .report-badge {
-        font-size: 0.7rem;
-        padding: var(--space-xs) var(--space-sm);
-    }
-
-    /* Extra small: compact charts (+100px) */
-    .chart-frame {
-        height: 380px;
-        min-height: 380px;
-    }
-
-    .chart-frame-tall {
-        height: 440px;
-        min-height: 440px;
-    }
-
-    .chart-frame-xl {
-        height: 500px;
-        min-height: 500px;
-    }
-
-    .chart-frame-short {
-        height: 360px;
-        min-height: 360px;
-    }
-
-    .chart-frame--pie {
-        height: 420px;
-        min-height: 420px;
-    }
-
-    .report-section h2 {
-        font-size: 1.4rem;
-    }
-
-    .report-section h3 {
-        font-size: 1.1rem;
+        margin: 0;
     }
 
     .threat-icon {
@@ -1001,11 +976,362 @@ code.code-inline {
     }
 
     .threat-name {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
     }
 
     .threat-desc {
         font-size: 0.8rem;
+    }
+
+    /* Case Study Mobile - full bleed */
+    .case-study {
+        padding: var(--space-md);
+        margin: var(--space-md) calc(-1 * var(--space-md));
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+
+    .case-study-header {
+        flex-direction: row;
+        align-items: center;
+        gap: var(--space-sm);
+    }
+
+    .case-study-icon {
+        font-size: 1.3rem;
+    }
+
+    .case-study-title {
+        font-size: 1rem;
+    }
+
+    .case-study-subtitle {
+        font-size: 0.8rem;
+    }
+
+    .case-study-content {
+        font-size: 0.9rem;
+    }
+
+    .case-study-content ul {
+        margin-left: 0;
+        padding-left: var(--space-md);
+    }
+
+    .case-study-stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-sm);
+    }
+
+    .case-stat {
+        text-align: center;
+        padding: var(--space-sm);
+        background: var(--bg-tertiary);
+        border-radius: var(--radius-sm);
+    }
+
+    .case-stat-value {
+        font-size: 1.3rem;
+    }
+
+    .case-stat-label {
+        font-size: 0.7rem;
+    }
+
+    /* Insight Box Mobile - full bleed */
+    .insight-box {
+        padding: var(--space-md);
+        margin: var(--space-md) calc(-1 * var(--space-md));
+        border-radius: 0;
+        border-left-width: 3px;
+    }
+
+    .insight-title {
+        font-size: 0.9rem;
+    }
+
+    .insight-box p {
+        font-size: 0.9rem;
+    }
+
+    .insight-box ul {
+        margin-left: 0;
+        padding-left: var(--space-md);
+    }
+
+    /* CTA Section Mobile */
+    .report-cta {
+        padding: var(--space-xl) var(--space-md);
+    }
+
+    .cta-title {
+        font-size: 1.4rem;
+    }
+
+    .cta-text {
+        font-size: 0.9rem;
+    }
+
+    .cta-buttons {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-sm);
+    }
+
+    .cta-buttons .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .cta-note {
+        font-size: 0.8rem;
+    }
+
+    /* Blockquotes */
+    blockquote {
+        margin: var(--space-md) calc(-1 * var(--space-md)) !important;
+        padding: var(--space-md) !important;
+        padding-left: var(--space-lg) !important;
+        font-size: 0.9rem !important;
+        border-radius: 0;
+    }
+
+    blockquote span {
+        display: block;
+        margin-top: var(--space-sm);
+    }
+}
+
+/* Extra Small Devices (<480px) */
+@media (max-width: 480px) {
+    .report-container {
+        padding: 0 var(--space-sm);
+    }
+
+    .report-hero {
+        padding: var(--space-lg) 0;
+    }
+
+    .report-title {
+        font-size: 1.35rem;
+        line-height: 1.3;
+    }
+
+    .report-subtitle {
+        font-size: 0.85rem;
+        line-height: 1.6;
+    }
+
+    .report-badge {
+        font-size: 0.65rem;
+        padding: 4px var(--space-sm);
+    }
+
+    .report-date {
+        font-size: 0.75rem;
+    }
+
+    .report-date svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    .report-stats {
+        gap: 6px;
+    }
+
+    .report-stat {
+        padding: var(--space-sm) 4px;
+    }
+
+    .report-stat-value {
+        font-size: 1.25rem;
+    }
+
+    .report-stat-label {
+        font-size: 0.6rem;
+    }
+
+    /* Section spacing */
+    .report-section {
+        padding: var(--space-lg) 0;
+    }
+
+    .section-number {
+        font-size: 0.65rem;
+    }
+
+    .report-section h2 {
+        font-size: 1.3rem;
+    }
+
+    .report-section h3 {
+        font-size: 1.05rem;
+    }
+
+    .report-section h4 {
+        font-size: 0.95rem;
+    }
+
+    .report-section p {
+        font-size: 0.88rem;
+    }
+
+    .report-section li {
+        font-size: 0.85rem;
+    }
+
+    /* Extra small: compact charts */
+    .chart-container {
+        margin: var(--space-sm) calc(-1 * var(--space-sm));
+    }
+
+    .chart-frame {
+        height: 340px;
+        min-height: 340px;
+    }
+
+    .chart-frame-tall {
+        height: 400px;
+        min-height: 400px;
+    }
+
+    .chart-frame-xl {
+        height: 460px;
+        min-height: 460px;
+    }
+
+    .chart-frame-short {
+        height: 320px;
+        min-height: 320px;
+    }
+
+    .chart-frame--pie {
+        height: 340px;
+        min-height: 340px;
+    }
+
+    /* Pipeline ultra-compact */
+    .pipeline-diagram {
+        margin: var(--space-sm) calc(-1 * var(--space-sm));
+        padding: var(--space-sm);
+    }
+
+    .pipeline-step {
+        padding: var(--space-xs) var(--space-sm);
+    }
+
+    .pipeline-step-icon {
+        font-size: 1rem;
+        min-width: 20px;
+    }
+
+    .pipeline-step-name {
+        font-size: 0.75rem;
+    }
+
+    .pipeline-step-desc {
+        font-size: 0.65rem;
+    }
+
+    /* Threat cards */
+    .threat-grid {
+        margin: var(--space-sm) calc(-1 * var(--space-sm));
+    }
+
+    .threat-card {
+        padding: var(--space-sm) var(--space-md);
+    }
+
+    .threat-icon {
+        font-size: 1rem;
+        margin-bottom: 4px;
+    }
+
+    .threat-name {
+        font-size: 0.85rem;
+    }
+
+    .threat-desc {
+        font-size: 0.75rem;
+    }
+
+    /* Case study ultra-compact */
+    .case-study {
+        margin: var(--space-sm) calc(-1 * var(--space-sm));
+        padding: var(--space-sm);
+    }
+
+    .case-study-icon {
+        font-size: 1.1rem;
+    }
+
+    .case-study-title {
+        font-size: 0.9rem;
+    }
+
+    .case-study-subtitle {
+        font-size: 0.7rem;
+    }
+
+    .case-study-content {
+        font-size: 0.85rem;
+    }
+
+    .case-stat-value {
+        font-size: 1.1rem;
+    }
+
+    .case-stat-label {
+        font-size: 0.6rem;
+    }
+
+    /* Insight box */
+    .insight-box {
+        margin: var(--space-sm) calc(-1 * var(--space-sm));
+        padding: var(--space-sm);
+    }
+
+    .insight-title {
+        font-size: 0.85rem;
+    }
+
+    .insight-box p {
+        font-size: 0.85rem;
+    }
+
+    /* CTA */
+    .report-cta {
+        padding: var(--space-lg) var(--space-sm);
+    }
+
+    .cta-title {
+        font-size: 1.2rem;
+    }
+
+    .cta-text {
+        font-size: 0.85rem;
+    }
+
+    .cta-note {
+        font-size: 0.75rem;
+    }
+
+    /* Blockquotes */
+    blockquote {
+        margin: var(--space-sm) calc(-1 * var(--space-sm)) !important;
+        padding: var(--space-sm) !important;
+        padding-left: var(--space-md) !important;
+        font-size: 0.85rem !important;
+    }
+
+    /* Code inline */
+    .code-inline,
+    code {
+        font-size: 0.8em;
+        padding: 1px 4px;
     }
 }
 
@@ -1089,8 +1415,11 @@ code.code-inline {
 
 @media (max-width: 768px) {
     .chart-frame--leaderboard {
-        height: 500px;
-        min-height: 500px;
+        height: 450px;
+        min-height: 450px;
+        margin: 0 calc(-1 * var(--space-md));
+        width: calc(100% + var(--space-md) * 2);
+        border-radius: 0;
     }
 
     .chart-frame--leaderboard iframe {
@@ -1099,15 +1428,17 @@ code.code-inline {
     }
 
     .chart-frame--growth {
-        height: 1700px;
-        min-height: 1700px;
+        height: 1500px;
+        min-height: 1500px;
     }
 }
 
 @media (max-width: 480px) {
     .chart-frame--leaderboard {
-        height: 450px;
-        min-height: 450px;
+        height: 400px;
+        min-height: 400px;
+        margin: 0 calc(-1 * var(--space-sm));
+        width: calc(100% + var(--space-sm) * 2);
     }
 
     .chart-frame--leaderboard iframe {
@@ -1116,17 +1447,29 @@ code.code-inline {
     }
 
     .chart-frame--growth {
-        height: 1650px;
-        min-height: 1650px;
+        height: 1400px;
+        min-height: 1400px;
     }
 }
 
-/* Stats Table - No horizontal scroll on mobile */
+/* Stats Table - Mobile responsive */
 @media (max-width: 768px) {
     .stats-table {
-        display: table;
+        display: block;
         width: 100%;
         font-size: 0.75rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: var(--space-md) calc(-1 * var(--space-md));
+        width: calc(100% + var(--space-md) * 2);
+    }
+
+    .stats-table thead,
+    .stats-table tbody,
+    .stats-table tr {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
     }
 
     .stats-table th,
@@ -1134,29 +1477,70 @@ code.code-inline {
         padding: var(--space-xs) var(--space-sm);
         word-break: break-word;
         white-space: normal;
+        line-height: 1.4;
     }
 
-    /* Hide less important columns on mobile */
+    .stats-table th:first-child,
+    .stats-table td:first-child {
+        padding-left: var(--space-md);
+    }
+
+    .stats-table th:last-child,
+    .stats-table td:last-child {
+        padding-right: var(--space-md);
+    }
+
+    /* Hide interpretation column on mobile (4th column) */
     .stats-table th:nth-child(4),
-    .stats-table td:nth-child(4),
+    .stats-table td:nth-child(4) {
+        display: none;
+    }
+
+    /* Also hide 5th column if exists */
     .stats-table th:nth-child(5),
     .stats-table td:nth-child(5) {
         display: none;
+    }
+
+    .stats-table .mono {
+        font-size: 0.7rem;
     }
 }
 
 @media (max-width: 480px) {
     .stats-table {
         font-size: 0.65rem;
+        margin: var(--space-sm) calc(-1 * var(--space-sm));
+        width: calc(100% + var(--space-sm) * 2);
     }
 
     .stats-table th,
     .stats-table td {
         padding: 4px 6px;
     }
+
+    .stats-table th:first-child,
+    .stats-table td:first-child {
+        padding-left: var(--space-sm);
+    }
+
+    .stats-table th:last-child,
+    .stats-table td:last-child {
+        padding-right: var(--space-sm);
+    }
+
+    .stats-table .mono {
+        font-size: 0.6rem;
+    }
+
+    /* Hide 3rd column too on very small screens */
+    .stats-table th:nth-child(3),
+    .stats-table td:nth-child(3) {
+        display: none;
+    }
 }
 
-/* Report Stats Grid - Always centered */
+/* Report Stats Grid - base styles already defined above, this ensures centering */
 .report-stats {
     display: flex;
     justify-content: center;
@@ -1165,33 +1549,7 @@ code.code-inline {
     flex-wrap: wrap;
 }
 
-@media (max-width: 768px) {
-    .report-stats {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: var(--space-sm);
-        width: 100%;
-        max-width: 350px;
-        margin: 0 auto;
-    }
-
-    .report-stat {
-        min-width: unset;
-        width: 100%;
-        max-width: none;
-        padding: var(--space-sm);
-    }
-
-    .report-stat-value {
-        font-size: 1.4rem;
-    }
-
-    .report-stat-label {
-        font-size: 0.7rem;
-    }
-}
-
-/* Pipeline Diagram - Centered and Compact */
+/* Pipeline Diagram - base centering (mobile styles in main media queries above) */
 .pipeline-diagram {
     display: flex;
     align-items: center;
@@ -1203,84 +1561,76 @@ code.code-inline {
     margin: var(--space-lg) auto;
 }
 
+/* ============================================
+   MOBILE ENHANCEMENTS - Safe areas, touch, and polish
+   ============================================ */
+
+/* Safe area support for notched phones */
+@supports (padding: max(0px)) {
+    @media (max-width: 768px) {
+        .report-container {
+            padding-left: max(var(--space-md), env(safe-area-inset-left));
+            padding-right: max(var(--space-md), env(safe-area-inset-right));
+        }
+
+        .report-cta {
+            padding-bottom: max(var(--space-xl), env(safe-area-inset-bottom));
+        }
+    }
+
+    @media (max-width: 480px) {
+        .report-container {
+            padding-left: max(var(--space-sm), env(safe-area-inset-left));
+            padding-right: max(var(--space-sm), env(safe-area-inset-right));
+        }
+    }
+}
+
+/* Better tap targets for mobile */
 @media (max-width: 768px) {
+    .report-section a {
+        padding: 2px 0;
+    }
+
+    .btn {
+        min-height: 48px;
+        padding: var(--space-md) var(--space-lg);
+    }
+
+    /* Improve readability */
+    .report-section p,
+    .report-section li,
+    .insight-box p,
+    .case-study-content {
+        word-spacing: 0.02em;
+    }
+
+    /* Smoother transitions */
+    .chart-container,
+    .insight-box,
+    .case-study,
+    .threat-card,
     .pipeline-diagram {
-        flex-direction: column;
-        padding: var(--space-md);
-        gap: var(--space-xs);
-    }
-
-    .pipeline-step {
-        width: 90%;
-        max-width: 280px;
-        flex-direction: row;
-        padding: var(--space-sm) var(--space-md);
-        gap: var(--space-sm);
-        min-width: unset;
-    }
-
-    .pipeline-step-icon {
-        font-size: 1.2rem;
-        min-width: 28px;
-    }
-
-    .pipeline-step-name {
-        font-size: 0.75rem;
-    }
-
-    .pipeline-step-desc {
-        font-size: 0.65rem;
-    }
-
-    .pipeline-arrow {
-        transform: rotate(90deg);
-        font-size: 0.9rem;
-        margin: var(--space-xs) 0;
+        transition: none;
     }
 }
 
-/* Threat Grid - Centered */
+/* Prevent horizontal overflow on mobile */
 @media (max-width: 768px) {
-    .threat-grid {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: var(--space-sm);
+    .report-layout {
+        overflow-x: hidden;
     }
 
-    .threat-card {
-        width: 100%;
-        max-width: 320px;
-        padding: var(--space-md);
+    /* Ensure images don't break layout */
+    .report-section img {
+        max-width: 100%;
+        height: auto;
     }
 
-    .threat-score {
-        font-size: 1.4rem;
-    }
-
-    .threat-name {
-        font-size: 0.85rem;
-    }
-
-    .threat-desc {
-        font-size: 0.75rem;
-    }
-}
-
-/* Case Study Stats - Responsive */
-@media (max-width: 768px) {
-    .case-study-stats {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: var(--space-sm);
-        text-align: center;
-    }
-
-    .case-study-stat-value {
-        font-size: 1.3rem;
-    }
-
-    .case-study-stat-label {
-        font-size: 0.7rem;
+    /* Better gradient text on mobile */
+    .gradient-text {
+        background-size: 100%;
+        -webkit-background-clip: text;
+        background-clip: text;
     }
 }

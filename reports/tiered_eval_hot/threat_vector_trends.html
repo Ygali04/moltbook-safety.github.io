@@ -370,10 +370,11 @@
 
 
     <script>
-    // Legend below graph - 7% gap from x-axis, tight bottom margin
+    // Legend below graph - 40px gap from x-axis
     (function() {
         function moveLegendToBottom() {
             var chartIds = ['threat-combined-instance', 'threat-combined-cumulative', 'threat-combined-avg'];
+            var isMobile = window.innerWidth <= 480;
             
             chartIds.forEach(function(chartId) {
                 var chartDiv = document.getElementById(chartId);
@@ -382,16 +383,18 @@
                 try {
                     Plotly.relayout(chartDiv, {
                         'showlegend': true,
+                        'title.text': '',  // Remove Plotly title
+                        'height': isMobile ? 680 : 480,  // +200px on mobile
                         'legend': {
                             orientation: 'h',
                             yanchor: 'top',
-                            y: -0.15,
+                            y: -0.25,
                             xanchor: 'center',
                             x: 0.5,
                             bgcolor: 'rgba(0,0,0,0)',
                             font: { size: 11, color: '#e0e0e0' }
                         },
-                        'margin': { l: 45, r: 15, t: 40, b: 70 }
+                        'margin': { l: 45, r: 15, t: 20, b: 120 }
                     });
                 } catch(e) {}
             });
@@ -404,6 +407,51 @@
             setTimeout(moveLegendToBottom, 150);
         });
     })();
+    </script>
+    
+    <script>
+    // Toggle function for threat combined charts
+    function toggleThreatCombined(view) {
+        var views = ['instance', 'cumulative', 'avg'];
+        views.forEach(function(v) {
+            // Target the chart-container divs directly by ID
+            var container = document.getElementById('chart-combined-' + v);
+            var btn = document.getElementById('btn-combined-' + v);
+            var desc = document.getElementById('desc-combined-' + v);
+            
+            if (v === view) {
+                if (container) container.style.display = 'block';
+                if (btn) btn.classList.add('active');
+                if (desc) desc.style.display = 'block';
+            } else {
+                if (container) container.style.display = 'none';
+                if (btn) btn.classList.remove('active');
+                if (desc) desc.style.display = 'none';
+            }
+        });
+        
+        // Resize and reapply legend positioning after toggle
+        setTimeout(function() {
+            var plotlyDiv = document.getElementById('threat-combined-' + view);
+            if (plotlyDiv && typeof Plotly !== 'undefined') {
+                var containerWidth = plotlyDiv.parentElement.offsetWidth || plotlyDiv.offsetWidth;
+                var isMobile = window.innerWidth <= 480;
+                Plotly.relayout(plotlyDiv, {
+                    width: containerWidth,
+                    height: isMobile ? 680 : 480,  // +200px on mobile
+                    'title.text': '',
+                    'margin.t': 20,
+                    'margin.b': 120,
+                    'legend.y': -0.25
+                });
+            }
+        }, 50);
+    }
+    
+    // Initialize on load
+    window.addEventListener('load', function() {
+        toggleThreatCombined('instance');
+    });
     </script>
 
 </body>

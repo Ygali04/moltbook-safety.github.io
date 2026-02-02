@@ -321,7 +321,7 @@
 </head>
 <body>
                 <section>
-                <h2>Threat Vector Details by Dimension</h2>
+                <h2>Threat Vector Details by Dimension <span style="color: #4ecdc4; font-size: 0.7em;">(Deep Threads)</span></h2>
                 <div class="toggle-container">
                     <button class="toggle-btn active" onclick="toggleThreatDetails('instance')" id="btn-details-instance">Individual</button>
                     <button class="toggle-btn" onclick="toggleThreatDetails('cumulative')" id="btn-details-cumulative">Cumulative</button>
@@ -473,6 +473,51 @@
         });
         window.addEventListener('resize', updateSubplotLayout);
     })();
+    </script>
+    
+    <script>
+    // Toggle function for threat details charts
+    function toggleThreatDetails(view) {
+        var views = ['instance', 'cumulative', 'avg'];
+        views.forEach(function(v) {
+            // Target the chart-container divs directly by ID
+            var container = document.getElementById('chart-details-' + v);
+            var btn = document.getElementById('btn-details-' + v);
+            var desc = document.getElementById('desc-details-' + v);
+            
+            if (v === view) {
+                if (container) container.style.display = 'block';
+                if (btn) btn.classList.add('active');
+                if (desc) desc.style.display = 'block';
+            } else {
+                if (container) container.style.display = 'none';
+                if (btn) btn.classList.remove('active');
+                if (desc) desc.style.display = 'none';
+            }
+        });
+        
+        // Resize and reapply legend positioning after toggle
+        setTimeout(function() {
+            var plotlyDiv = document.getElementById('threat-details-' + view);
+            if (plotlyDiv && typeof Plotly !== 'undefined') {
+                var containerWidth = plotlyDiv.parentElement.offsetWidth || plotlyDiv.offsetWidth;
+                Plotly.relayout(plotlyDiv, {
+                    width: containerWidth,
+                    height: 800,
+                    'title.text': '',
+                    'margin.t': 20,
+                    'margin.b': 120,
+                    'legend.y': -0.12
+                });
+            }
+            window.dispatchEvent(new Event('resize'));
+        }, 50);
+    }
+    
+    // Initialize on load
+    window.addEventListener('load', function() {
+        toggleThreatDetails('instance');
+    });
     </script>
 
 </body>
